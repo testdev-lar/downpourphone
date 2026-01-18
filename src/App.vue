@@ -1,6 +1,6 @@
 <template>
   <div class="relative min-h-screen">
-    <BackgroundRain />
+    <BackgroundRain :clearingPhase="clearingPhase" @lightning="onLightning" />
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
@@ -10,7 +10,27 @@
 </template>
 
 <script setup>
+import { ref, provide } from 'vue'
 import BackgroundRain from './components/BackgroundRain.vue'
+import { useAudio } from './composables/useAudio'
+
+const { playOneShot } = useAudio()
+
+// Phase-based clearing: 0=normal, 1=slowing, 2=sparse, 3=fading out
+const clearingPhase = ref(0)
+
+const setPhase = (phase) => {
+  clearingPhase.value = phase
+}
+
+const onLightning = () => {
+  playOneShot('thunder', 0.4)
+}
+
+provide('rainClearing', {
+  clearingPhase,
+  setPhase
+})
 </script>
 
 <style>

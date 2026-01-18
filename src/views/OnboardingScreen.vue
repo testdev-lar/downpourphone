@@ -6,12 +6,11 @@
           <div class="w-32 h-32">
             <svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="45" r="30" :stroke="getScreenIconColor(currentScreen)" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,5"/>
-              <path v-if="currentScreen === 1" d="M50 75 L50 85" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path v-if="currentScreen === 1" d="M40 75 L40 80 M60 75 L60 80" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <circle v-if="currentScreen === 2" cx="40" cy="45" r="15" stroke="#a8b5c9" stroke-width="2" stroke-linecap="round"/>
-              <circle v-if="currentScreen === 2" cx="60" cy="45" r="20" stroke="#4a5568" stroke-width="3" stroke-linecap="round"/>
-              <text v-if="currentScreen === 3" x="50" y="48" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">words</text>
-              <path v-if="currentScreen === 4" d="M50 60 L50 70 M45 65 L55 65" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>
+              <path v-if="currentScreen === 0" d="M50 75 L50 85" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path v-if="currentScreen === 0" d="M40 75 L40 80 M60 75 L60 80" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <text v-if="currentScreen === 1" x="50" y="48" text-anchor="middle" fill="currentColor" font-size="12" font-weight="300">words</text>
+              <path v-if="currentScreen === 2" d="M50 60 L50 70 M45 65 L55 65" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>
+              <circle v-if="currentScreen === 3" cx="50" cy="50" r="15" stroke="#f6ad55" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
         </div>
@@ -47,10 +46,6 @@ const screens = [
     text: 'Downpour is a space to release what\'s weighing on you.'
   },
   {
-    title: 'Light or heavy.',
-    text: 'Light clouds for small weights. Heavy clouds for bigger ones.'
-  },
-  {
     title: 'Write what\'s here.',
     text: 'Then let it go.'
   },
@@ -65,7 +60,7 @@ const screens = [
 ]
 
 const getScreenIconColor = (screen) => {
-  const colors = ['#a8b5c9', '#6b7280', '#4a5568', '#9ca3af', '#8b9299']
+  const colors = ['#a8b5c9', '#4a5568', '#9ca3af', '#f6ad55']
   return colors[screen]
 }
 

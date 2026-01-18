@@ -45,9 +45,8 @@
           >
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1">
-                <div 
-                  class="w-4 h-4 rounded-full"
-                  :class="entry.mode === 'light' ? 'bg-accent-light' : 'bg-accent-heavy'"
+                <div
+                  class="w-4 h-4 rounded-full bg-accent-light"
                 ></div>
                 <span class="text-xs text-text-muted">{{ formatDate(entry.timestamp) }}</span>
               </div>
@@ -78,17 +77,10 @@
               <p class="text-text-primary leading-relaxed">{{ entry.text }}</p>
               
               <div class="flex items-center gap-3 mt-3">
-                <div 
-                  class="px-2 py-1 rounded-full text-xs"
-                  :class="entry.mode === 'light' ? 'bg-accent-light/10 text-accent-light' : 'bg-accent-heavy/10 text-accent-heavy'"
-                >
-                  {{ entry.mode }}
-                </div>
-                
                 <span v-if="entry.emotion" class="px-2 py-1 rounded-full text-xs text-accent-light bg-accent-light/10">
                   {{ entry.emotion }}
                 </span>
-                
+
                 <span class="text-xs text-text-muted ml-auto">
                   {{ formatTime(entry.timestamp) }}
                 </span>

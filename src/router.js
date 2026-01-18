@@ -17,10 +17,9 @@ const routes = [
     component: () => import('./views/HomeScreen.vue')
   },
   {
-    path: '/write/:mode',
+    path: '/write',
     name: 'write',
-    component: () => import('./views/WriteScreen.vue'),
-    props: true
+    component: () => import('./views/WriteScreen.vue')
   },
   {
     path: '/release',

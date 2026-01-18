@@ -27,14 +27,14 @@
               <p class="text-text-muted text-sm">{{ isMuted ? 'Off' : 'On' }}</p>
             </div>
             
-            <button 
+            <button
               @click="toggleSound"
-              class="touch-target w-14 h-8 rounded-full transition-all duration-300 relative"
-              :class="isMuted ? 'bg-bg-secondary' : 'bg-accent-light/20'"
+              class="touch-target w-14 h-8 rounded-full transition-all duration-300 relative flex-shrink-0"
+              :class="isMuted ? 'bg-bg-secondary border border-border' : 'bg-accent-light/30'"
             >
-              <div 
-                class="absolute top-1 w-6 h-6 rounded-full transition-all duration-300"
-                :class="isMuted ? 'left-1 bg-text-muted' : 'left-7 bg-accent-light'"
+              <div
+                class="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full transition-all duration-300"
+                :class="isMuted ? 'left-1 bg-text-muted' : 'left-[calc(100%-1.75rem)] bg-accent-light'"
               ></div>
             </button>
           </div>
@@ -125,20 +125,17 @@ const { toggleMute, isMuted, stopSound, fadeToSound } = useAudio()
 
 const showConfirmDialog = ref(false)
 
-onMounted(() => {
-  const settings = JSON.parse(localStorage.getItem('downpour_settings') || '{"soundEnabled":true}')
-  const shouldBeMuted = !settings.soundEnabled
-  if (shouldBeMuted !== isMuted.value) {
-    toggleMute()
-  }
-})
-
 const toggleSound = () => {
   toggleMute()
   // After toggle, isMuted reflects the new state
   // soundEnabled is the opposite of isMuted
   const settings = { soundEnabled: !isMuted.value }
   localStorage.setItem('downpour_settings', JSON.stringify(settings))
+
+  // If sound was just enabled, start playing storm
+  if (!isMuted.value) {
+    fadeToSound('storm')
+  }
 }
 
 const handleReplayTutorial = () => {
@@ -153,11 +150,11 @@ const confirmClear = () => {
 const clearAllData = () => {
   clearAllEntries()
   showConfirmDialog.value = false
-  
+
   stopSound()
-  
+
   setTimeout(() => {
-    fadeToSound('light')
+    fadeToSound('storm')
     router.push('/home')
   }, 500)
 }
