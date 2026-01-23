@@ -12,7 +12,7 @@
           Back
         </button>
         
-        <h1 class="text-xl font-light text-text-primary">Puddle</h1>
+        <h1 class="text-xl font-light text-text-primary">{{ entryCountText }}</h1>
         
         <div class="w-12"></div>
       </div>
@@ -34,40 +34,44 @@
           <p class="text-text-muted/60 text-sm mt-2">Your releases will land here.</p>
         </div>
         
-        <div 
+        <div
           v-for="entry in entries"
           :key="entry.id"
           class="bg-bg-secondary/40 border border-border rounded-2xl overflow-hidden backdrop-blur-sm transition-all hover:bg-bg-secondary/50"
         >
-          <button 
-            @click="toggleExpand(entry.id)"
-            class="w-full px-4 py-3 flex items-start gap-3 text-left"
-          >
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <div
-                  class="w-4 h-4 rounded-full bg-accent-light"
-                ></div>
-                <span class="text-xs text-text-muted">{{ formatDate(entry.timestamp) }}</span>
-              </div>
-              <p 
-                class="text-sm"
-                :class="expandedEntries.has(entry.id) ? 'text-text-primary' : 'text-text-muted'"
-              >
-                {{ entry.text }}
-              </p>
-            </div>
-            
-            <svg 
-              viewBox="0 0 24 24" 
-              class="w-5 h-5 text-text-muted transition-transform flex-shrink-0 mt-1"
-              :class="{ 'rotate-180': expandedEntries.has(entry.id) }"
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
+          <div class="flex items-center gap-3 px-4 py-3">
+            <button
+              @click="toggleExpand(entry.id)"
+              class="flex-1 flex items-center gap-3 text-left min-w-0"
             >
-              <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <div class="w-4 h-4 rounded-full bg-accent-light"></div>
+                  <span class="text-sm text-text-muted">{{ formatDateTime(entry.timestamp) }}</span>
+                </div>
+              </div>
+
+              <svg
+                viewBox="0 0 24 24"
+                class="w-5 h-5 text-text-muted transition-transform flex-shrink-0"
+                :class="{ 'rotate-180': expandedEntries.has(entry.id) }"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <button
+              @click="confirmDelete(entry.id)"
+              class="p-2 text-text-muted hover:text-red-400 transition-colors flex-shrink-0"
+              aria-label="Delete thought"
+            >
+              <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
           
           <div 
             v-if="expandedEntries.has(entry.id)"
@@ -90,6 +94,46 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete confirmation modal -->
+    <transition name="modal">
+      <div
+        v-if="showDeleteConfirm"
+        class="fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/50 backdrop-blur-sm"
+        @click="cancelDelete"
+      >
+        <div
+          class="bg-bg-secondary border border-border rounded-2xl p-6 max-w-sm w-full"
+          @click.stop
+        >
+          <h2 class="text-lg font-light text-text-primary mb-4">Delete thought?</h2>
+          <div class="flex gap-3">
+            <button
+              @click="cancelDelete"
+              class="flex-1 px-4 py-2 bg-bg-primary border border-border text-text-primary rounded-lg hover:bg-bg-secondary/50 transition-colors"
+            >
+              No
+            </button>
+            <button
+              @click="executeDelete"
+              class="flex-1 px-4 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Delete feedback message -->
+    <transition name="fade">
+      <div
+        v-if="showDeleteFeedback"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-bg-secondary/95 border border-border rounded-full text-text-primary backdrop-blur-sm z-50"
+      >
+        Thought deleted
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -98,19 +142,30 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '../composables/useLocalStorage'
 import { useAudio } from '../composables/useAudio'
+import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { getEntriesSortedByDate } = useLocalStorage()
+const { getEntriesSortedByDate, deleteEntry } = useLocalStorage()
 const { fadeToSound } = useAudio()
+const { triggerHaptic } = useHaptics()
 
 const entries = ref([])
 const expandedEntries = ref(new Set())
+const deletingEntry = ref(null)
+const showDeleteConfirm = ref(false)
+const showDeleteFeedback = ref(false)
+
+const entryCountText = computed(() => {
+  const count = entries.value.length
+  return count === 1 ? '1 thought released' : `${count} thoughts released`
+})
 
 onMounted(() => {
   entries.value = getEntriesSortedByDate.value
 })
 
 const toggleExpand = (id) => {
+  triggerHaptic('medium')
   if (expandedEntries.value.has(id)) {
     expandedEntries.value.delete(id)
   } else {
@@ -120,19 +175,7 @@ const toggleExpand = (id) => {
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp)
-  const now = new Date()
-  const diffMs = now - date
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  
-  if (diffDays === 0) {
-    return 'Today'
-  } else if (diffDays === 1) {
-    return 'Yesterday'
-  } else if (diffDays < 7) {
-    return date.toLocaleDateString('en-US', { weekday: 'long' })
-  } else {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 const formatTime = (timestamp) => {
@@ -140,8 +183,64 @@ const formatTime = (timestamp) => {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
+const formatDateTime = (timestamp) => {
+  return `${formatDate(timestamp)} at ${formatTime(timestamp)}`
+}
+
+const confirmDelete = (id) => {
+  triggerHaptic('medium')
+  deletingEntry.value = id
+  showDeleteConfirm.value = true
+}
+
+const cancelDelete = () => {
+  triggerHaptic('medium')
+  deletingEntry.value = null
+  showDeleteConfirm.value = false
+}
+
+const executeDelete = () => {
+  if (deletingEntry.value) {
+    triggerHaptic('medium')
+    deleteEntry(deletingEntry.value)
+    entries.value = getEntriesSortedByDate.value
+    expandedEntries.value.delete(deletingEntry.value)
+    showDeleteConfirm.value = false
+    deletingEntry.value = null
+
+    // Show feedback
+    showDeleteFeedback.value = true
+    setTimeout(() => {
+      showDeleteFeedback.value = false
+    }, 2000)
+  }
+}
+
 const goBack = () => {
+  triggerHaptic('medium')
   fadeToSound('light')
   router.push('/home')
 }
 </script>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

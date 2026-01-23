@@ -28,7 +28,7 @@
             'border-red-500/50': isNearLimit,
             'border-red-500': isAtLimit
           }"
-          placeholder="Write what's weighing on you..."
+          :placeholder="currentPrompt"
         ></textarea>
 
         <div class="flex justify-between items-center">
@@ -75,12 +75,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '../composables/useLocalStorage'
+import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
 const { saveEntry } = useLocalStorage()
+const { triggerHaptic } = useHaptics()
 
 const charLimit = 280
 
@@ -98,6 +100,39 @@ const emotions = [
   'Restless'
 ]
 
+// Daily writing prompts
+const writingPrompts = [
+  "What's one thing you'd like to let go of today?",
+  "What thought keeps circling back?",
+  "What are you holding onto that no longer serves you?",
+  "What feels too heavy to carry right now?",
+  "What would you say if no one was listening?",
+  "What needs to fall away?",
+  "What emotion is asking to be acknowledged?",
+  "What are you resisting feeling?",
+  "What truth are you avoiding?",
+  "What do you need to release to move forward?"
+]
+
+const currentPrompt = ref('')
+
+// Get or set session prompt (changes after each release)
+const getSessionPrompt = () => {
+  const storedPrompt = sessionStorage.getItem('downpour_current_prompt')
+  if (storedPrompt) {
+    return storedPrompt
+  }
+  // No stored prompt, generate a new one
+  const randomIndex = Math.floor(Math.random() * writingPrompts.length)
+  const newPrompt = writingPrompts[randomIndex]
+  sessionStorage.setItem('downpour_current_prompt', newPrompt)
+  return newPrompt
+}
+
+onMounted(() => {
+  currentPrompt.value = getSessionPrompt()
+})
+
 const isNearLimit = computed(() => {
   const threshold = Math.floor(charLimit * 0.9)
   return text.value.length >= threshold && text.value.length < charLimit
@@ -114,16 +149,22 @@ const handleInput = () => {
 }
 
 const toggleEmotion = (emotion) => {
+  triggerHaptic('medium')
   selectedEmotion.value = selectedEmotion.value === emotion ? null : emotion
 }
 
 const handleRelease = () => {
   if (!text.value.trim()) return
 
+  triggerHaptic('medium')
+
   saveEntry({
     text: text.value,
     emotion: selectedEmotion.value
   })
+
+  // Clear the session prompt so a new one is generated next time
+  sessionStorage.removeItem('downpour_current_prompt')
 
   router.push({
     name: 'release',
@@ -135,6 +176,7 @@ const handleRelease = () => {
 }
 
 const goBack = () => {
+  triggerHaptic('medium')
   router.push('/home')
 }
 </script>

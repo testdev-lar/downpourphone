@@ -38,6 +38,11 @@ export function useLocalStorage() {
     }
   }
 
+  const deleteEntry = (id) => {
+    entries.value = entries.value.filter(entry => entry.id !== id)
+    persistEntries()
+  }
+
   const clearAllEntries = () => {
     entries.value = []
     localStorage.removeItem(STORAGE_KEY)
@@ -85,6 +90,7 @@ export function useLocalStorage() {
     entries,
     getEntriesSortedByDate,
     saveEntry,
+    deleteEntry,
     clearAllEntries,
     hasCompletedOnboarding,
     setOnboardingComplete,
