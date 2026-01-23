@@ -44,9 +44,11 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAudio } from '../composables/useAudio'
+import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
 const { fadeToSound, isMuted, isPlaying } = useAudio()
+const { triggerHaptic } = useHaptics()
 
 onMounted(() => {
   // Start storm sound if not muted and no sound is playing
@@ -56,15 +58,18 @@ onMounted(() => {
 })
 
 const goToWrite = () => {
+  triggerHaptic('medium')
   router.push('/write')
 }
 
 const goToArchive = () => {
+  triggerHaptic('medium')
   fadeToSound('light')
   router.push('/archive')
 }
 
 const goToSettings = () => {
+  triggerHaptic('medium')
   router.push('/settings')
 }
 </script>

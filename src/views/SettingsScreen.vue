@@ -118,14 +118,17 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '../composables/useLocalStorage'
 import { useAudio } from '../composables/useAudio'
+import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
 const { clearAllEntries } = useLocalStorage()
 const { toggleMute, isMuted, stopSound, fadeToSound } = useAudio()
+const { triggerHaptic } = useHaptics()
 
 const showConfirmDialog = ref(false)
 
 const toggleSound = () => {
+  triggerHaptic('medium')
   toggleMute()
   // After toggle, isMuted reflects the new state
   // soundEnabled is the opposite of isMuted
@@ -139,15 +142,18 @@ const toggleSound = () => {
 }
 
 const handleReplayTutorial = () => {
+  triggerHaptic('medium')
   localStorage.removeItem('downpour_onboarding_complete')
   router.push('/onboarding')
 }
 
 const confirmClear = () => {
+  triggerHaptic('medium')
   showConfirmDialog.value = true
 }
 
 const clearAllData = () => {
+  triggerHaptic('medium')
   clearAllEntries()
   showConfirmDialog.value = false
 
@@ -160,6 +166,7 @@ const clearAllData = () => {
 }
 
 const goBack = () => {
+  triggerHaptic('medium')
   router.push('/home')
 }
 </script>
