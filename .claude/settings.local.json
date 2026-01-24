@@ -5,7 +5,10 @@
       "Bash(git add:*)",
       "Bash(git remote add:*)",
       "Bash(git remote:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Complete onboarding overhaul and add haptic feedback\n\n- Redesigned onboarding journey \\(6 screens, text-focused and poetic\\)\n- Removed icons and breathing visual from onboarding\n- Added interactive feature demonstrations \\(soundscape, emotions\\)\n- Implemented rotating daily writing prompts \\(10 variations\\)\n- Created useHaptics composable for tactile feedback\n- Added medium haptic feedback across all user interactions\n- Session-based prompt rotation \\(changes after each release\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Complete onboarding overhaul and add haptic feedback\n\n- Redesigned onboarding journey \\(6 screens, text-focused and poetic\\)\n- Removed icons and breathing visual from onboarding\n- Added interactive feature demonstrations \\(soundscape, emotions\\)\n- Implemented rotating daily writing prompts \\(10 variations\\)\n- Created useHaptics composable for tactile feedback\n- Added medium haptic feedback across all user interactions\n- Session-based prompt rotation \\(changes after each release\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(where git:*)"
     ]
   }
 }
