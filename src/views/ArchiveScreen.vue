@@ -20,17 +20,11 @@
     
     <div class="flex-1 overflow-y-auto px-6 py-4 bg-bg-archive">
       <div class="max-w-lg mx-auto space-y-4">
-        <div 
+        <div
           v-if="entries.length === 0"
           class="text-center py-16"
         >
-          <div class="w-20 h-20 mx-auto mb-4 opacity-30">
-            <svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="50" cy="55" rx="35" ry="25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M40 70 L45 80 L50 70 L55 80 L60 70" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <p class="text-text-muted">Nothing here yet.</p>
+          <p class="text-text-muted text-lg">Nothing here yet.</p>
           <p class="text-text-muted/60 text-sm mt-2">Your releases will land here.</p>
         </div>
         
