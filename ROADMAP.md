@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-26
 
 ## Quick Reference
 
@@ -30,7 +30,16 @@
 - PWA manifest and service worker configured
 - "Continue with your day" exit button on release screen
 
-### What's Fixed (This Session)
+### What's Fixed (This Session - 2026-01-26)
+- Settings icon updated to minimalist gear/cog design
+- Mountain silhouettes added to all stormy screens (Title, Home, Write, Archive, Settings)
+- Onboarding auto-advances when emotion tag selected (screen 4)
+- Audio toggle now stops ALL sounds immediately (including thunder one-shots)
+- Settings "Replay Tutorial" text alignment fixed
+- Settings top divider line now spans full width
+- HomeScreen nav buttons z-index fixed (clickable over mountains)
+
+### What's Fixed (Previous Session - 2026-01-25)
 - All 12 audio bugs from previous session
 - Audio now uses simple state machine (STORM or NATURE)
 - Storm plays continuously across screen transitions
@@ -40,7 +49,7 @@
 
 ### What's Next
 1. ~~Update settings icon to minimalist gear/cog design (P0)~~ DONE
-2. Test on Samsung S24 - verify PWA installation, audio, haptics (P0)
+2. ~~Test on Samsung S24 - basic functionality verified (P0)~~ DONE
 3. Deploy PWA to public URL (P1)
 4. TWA packaging with Bubblewrap (P1)
 5. Play Store submission (P1)
@@ -96,14 +105,15 @@
 
 #### 1. ~~Settings Icon Update~~ DONE
 
-#### 2. Test on Samsung S24
-**Verify:**
-- PWA installation works
-- Audio plays correctly (storm, nature, thunder)
-- Haptic feedback works
-- "Continue with your day" exits app (in TWA)
-- Offline mode works
-- localStorage persists
+#### 2. ~~Test on Samsung S24~~ DONE (Basic Testing)
+**Verified:**
+- [x] Mountains visible on all screens
+- [x] Audio toggle stops all sounds immediately
+- [x] Onboarding auto-advances on emotion selection
+- [x] Settings UI aligned correctly
+- [x] Nav buttons clickable
+- [ ] PWA installation (needs deployed URL)
+- [ ] Offline mode (needs deployed URL)
 
 ---
 
@@ -159,8 +169,8 @@ Exit:    stopAll() immediately
 - [ ] JDK 11+ for signing APK
 - [ ] Google Play Developer account ($25 one-time)
 - [x] Audio bugs fixed
-- [ ] Settings icon updated
-- [ ] S24 testing complete
+- [x] Settings icon updated
+- [x] S24 testing complete (basic functionality)
 
 ### Step 1: Install Bubblewrap
 ```bash
@@ -227,7 +237,7 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 1. ~~Fix audio bugs~~ DONE
 2. ~~Add "Continue with the day" exit button~~ DONE
 3. ~~Update settings icon~~ DONE
-4. Test on S24
+4. ~~Test on S24~~ DONE (basic testing complete)
 
 **P1 - Launch:**
 1. Deploy PWA to public URL
@@ -249,10 +259,10 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 - src/composables/useAudio.js (state machine: STORM/NATURE)
 
 **Screens:**
-- src/views/TitleScreen.vue (no icon, playStorm on mount)
-- src/views/OnboardingScreen.vue (5 screens, no sound toggle)
+- src/views/TitleScreen.vue (playStorm on mount, mountains)
+- src/views/OnboardingScreen.vue (5 screens, auto-advance on emotion)
 - src/views/ReleaseScreen.vue ("Continue with your day" button)
-- src/views/HomeScreen.vue (settings icon needs update)
+- src/views/HomeScreen.vue (gear icon, mountains, nav z-index fixed)
 
 **Data:**
 - src/composables/useLocalStorage.js

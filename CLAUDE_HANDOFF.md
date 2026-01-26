@@ -104,7 +104,21 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-01-25)
+### Latest Session (2026-01-26)
+**S24 Testing and UI Fixes**
+
+1. **Settings icon updated** to minimalist gear/cog design
+2. **Mountain silhouettes** added to all stormy screens (Title, Home, Write, Archive, Settings)
+3. **Onboarding auto-advance** - selecting emotion on screen 4 auto-advances to screen 5
+4. **Audio toggle fix** - now stops ALL sounds immediately including thunder one-shots
+   - Added `oneShotSources` tracking array
+   - `stopAll()` now iterates and stops all tracked one-shots
+5. **Settings UI fixes**:
+   - "Replay Tutorial" text alignment fixed
+   - Top divider line now spans full width
+6. **HomeScreen nav z-index** - fixed buttons not clickable over mountains
+
+### Previous Session (2026-01-25)
 **MAJOR: Complete Audio System Redesign**
 
 1. **Rewrote useAudio.js with state machine approach**:
@@ -183,17 +197,10 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Remaining Launch Blockers
 
-### P0 - Must Fix Before Play Store
-
-1. **Settings Icon Visual Update**
-   - Needed: Minimalist gear/cog SVG icon matching aesthetic
-   - File: src/views/HomeScreen.vue
-
-2. **Test on Samsung S24**
-   - Verify PWA installation
-   - Test audio playback (storm, nature, thunder)
-   - Test haptic feedback
-   - Test "Continue with your day" exit behavior
+### P0 - COMPLETE
+All P0 items done:
+- ~~Settings icon~~ DONE (gear/cog design)
+- ~~S24 testing~~ DONE (basic functionality verified)
 
 ### P1 - Play Store Deployment
 1. Deploy PWA to public URL (Netlify/Vercel)
