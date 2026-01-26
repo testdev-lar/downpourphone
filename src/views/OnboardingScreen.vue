@@ -30,7 +30,7 @@
 
     <!-- Onboarding content -->
     <div class="relative z-20 w-full max-w-md">
-      <!-- Screens 1-4: Text-only screens -->
+      <!-- Screens 0-3: Text-only screens -->
       <transition name="fade" mode="out-in">
         <div v-if="currentScreen <= 3" :key="currentScreen" class="text-center space-y-6">
           <div class="space-y-3">
@@ -46,40 +46,8 @@
           </div>
         </div>
 
-        <!-- Screen 4: Soundscape Feature -->
+        <!-- Screen 4: Emotion Selector -->
         <div v-else-if="currentScreen === 4" :key="currentScreen" class="space-y-8">
-          <p class="text-amber-100/90 text-2xl font-light tracking-wide text-center">
-            Listen to the world wash clean.
-          </p>
-
-          <div class="flex justify-center">
-            <div
-              class="relative bg-bg-secondary/30 border-2 rounded-2xl p-6 backdrop-blur-sm transition-all duration-500"
-              :class="highlightSoundscape ? 'border-accent-light shadow-lg shadow-accent-light/30' : 'border-border'"
-            >
-              <div class="flex items-center justify-between gap-6">
-                <div>
-                  <p class="text-text-primary font-medium">Sound</p>
-                  <p class="text-text-muted text-sm">{{ isMuted ? 'Off' : 'On' }}</p>
-                </div>
-
-                <button
-                  @click="toggleSound"
-                  class="touch-target w-14 h-8 rounded-full transition-all duration-300 relative flex-shrink-0"
-                  :class="isMuted ? 'bg-bg-secondary border border-border' : 'bg-accent-light/30'"
-                >
-                  <div
-                    class="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full transition-all duration-300"
-                    :class="isMuted ? 'left-1 bg-text-muted' : 'left-[calc(100%-1.75rem)] bg-accent-light'"
-                  ></div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Screen 5: Emotion Selector -->
-        <div v-else-if="currentScreen === 5" :key="currentScreen" class="space-y-8">
           <p class="text-amber-100/90 text-2xl font-light tracking-wide text-center">
             Name what you feel.
           </p>
@@ -104,8 +72,8 @@
           </div>
         </div>
 
-        <!-- Screen 6: First Write -->
-        <div v-else-if="currentScreen === 6" :key="currentScreen" class="space-y-8">
+        <!-- Screen 5: First Write -->
+        <div v-else-if="currentScreen === 5" :key="currentScreen" class="space-y-8">
           <p class="text-amber-100/90 text-2xl font-light tracking-wide text-center mb-8">
             Now, let it fall.
           </p>
@@ -186,12 +154,10 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAudio } from '../composables/useAudio'
 import { useLocalStorage } from '../composables/useLocalStorage'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { toggleMute, isMuted, fadeToSound } = useAudio()
 const { saveEntry } = useLocalStorage()
 const { triggerHaptic } = useHaptics()
 
@@ -202,7 +168,6 @@ const charLimit = 280
 const textInput = ref(null)
 
 // Highlight states for feature screens
-const highlightSoundscape = ref(false)
 const highlightEmotions = ref(false)
 const highlightTextInput = ref(false)
 
@@ -233,7 +198,7 @@ const writingPrompts = [
 
 const currentPrompt = ref('')
 
-// Screen content
+// Screen content (screens 0-3 are text-only)
 const screens = [
   {
     lines: [
@@ -276,40 +241,30 @@ const skyStyle = computed(() => {
 })
 
 const showTapIndicator = computed(() => {
-  // Show on screens 0-5, hide on screen 6 (first write)
-  return currentScreen.value < 6
+  // Show on screens 0-4, hide on screen 5 (first write)
+  return currentScreen.value < 5
 })
 
 onMounted(() => {
   // Select a random prompt
   const randomIndex = Math.floor(Math.random() * writingPrompts.length)
   currentPrompt.value = writingPrompts[randomIndex]
-
-  // Trigger highlights for feature screens
-  setTimeout(() => {
-    if (currentScreen.value === 4) {
-      highlightSoundscape.value = true
-    }
-  }, 500)
 })
 
 const nextScreen = () => {
-  if (currentScreen.value < 6) {
+  if (currentScreen.value < 5) {
     triggerHaptic('medium')
     currentScreen.value++
 
     // Reset all highlights
-    highlightSoundscape.value = false
     highlightEmotions.value = false
     highlightTextInput.value = false
 
     // Trigger new highlights based on screen
     setTimeout(() => {
       if (currentScreen.value === 4) {
-        highlightSoundscape.value = true
-      } else if (currentScreen.value === 5) {
         highlightEmotions.value = true
-      } else if (currentScreen.value === 6) {
+      } else if (currentScreen.value === 5) {
         highlightTextInput.value = true
         // Focus the text input
         nextTick(() => {
@@ -319,17 +274,6 @@ const nextScreen = () => {
         })
       }
     }, 500)
-  }
-}
-
-const toggleSound = () => {
-  triggerHaptic('medium')
-  toggleMute()
-  const settings = { soundEnabled: !isMuted.value }
-  localStorage.setItem('downpour_settings', JSON.stringify(settings))
-
-  if (!isMuted.value) {
-    fadeToSound('storm')
   }
 }
 

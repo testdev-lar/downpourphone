@@ -47,14 +47,12 @@ import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { fadeToSound, isMuted, isPlaying } = useAudio()
+const { playStorm } = useAudio()
 const { triggerHaptic } = useHaptics()
 
 onMounted(() => {
-  // Start storm sound if not muted and no sound is playing
-  if (!isMuted.value && !isPlaying('storm') && !isPlaying('nature')) {
-    fadeToSound('storm')
-  }
+  // Ensure storm is playing (will be no-op if already playing)
+  playStorm()
 })
 
 const goToWrite = () => {
@@ -64,12 +62,13 @@ const goToWrite = () => {
 
 const goToArchive = () => {
   triggerHaptic('medium')
-  fadeToSound('light')
+  // Storm continues playing
   router.push('/archive')
 }
 
 const goToSettings = () => {
   triggerHaptic('medium')
+  // Storm continues playing
   router.push('/settings')
 }
 </script>
