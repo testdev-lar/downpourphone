@@ -101,15 +101,24 @@
         </transition>
       </div>
 
-      <!-- Return button (appears last) -->
+      <!-- Exit button (appears last) -->
       <transition name="gentle-fade">
-        <button
-          v-if="showButton"
-          @click="goHome"
-          class="touch-target px-8 py-3 bg-amber-200/10 hover:bg-amber-200/20 text-amber-200/80 rounded-full transition-all duration-300 border border-amber-200/20 backdrop-blur-sm active:scale-95"
-        >
-          Return
-        </button>
+        <div v-if="showButton" class="flex flex-col items-center">
+          <button
+            @click="exitApp"
+            class="touch-target px-8 py-3 bg-amber-200/10 hover:bg-amber-200/20 text-amber-200/80 rounded-full transition-all duration-300 border border-amber-200/20 backdrop-blur-sm active:scale-95"
+          >
+            Continue with your day
+          </button>
+
+          <!-- DEV: Temporary home button for testing -->
+          <button
+            @click="goHome"
+            class="mt-4 px-6 py-2 text-amber-200/40 text-sm underline"
+          >
+            [DEV] Return to Home
+          </button>
+        </div>
       </transition>
     </div>
   </div>
@@ -122,7 +131,7 @@ import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { fadeToSound, fadeOutSound, fadeInSound, crossfade, stopSound } = useAudio()
+const { fadeOutCurrent, playNature, stopAll } = useAudio()
 const { triggerHaptic } = useHaptics()
 
 const rainClearing = inject('rainClearing')
@@ -146,6 +155,9 @@ const showSunriseGlow = ref(false)
 // Bird animation
 const showBird = ref(false)
 const birdInterval = ref(null)
+
+// Track all timeouts for cleanup
+const activeTimeouts = []
 
 // Color interpolation helper
 const interpolateColor = (from, to, progress) => {
@@ -198,71 +210,87 @@ onUnmounted(() => {
   if (birdInterval.value) {
     clearInterval(birdInterval.value)
   }
+
+  // Clear all tracked timeouts
+  activeTimeouts.forEach(timeout => clearTimeout(timeout))
+  activeTimeouts.length = 0
 })
 
 const startClearingSequence = () => {
-  // Stage 1: Text dissolving starts (500ms) - now 4s dissolve duration
-  setTimeout(() => {
+  // Helper to track timeouts for cleanup
+  const addTimeout = (callback, delay) => {
+    const timeoutId = setTimeout(callback, delay)
+    activeTimeouts.push(timeoutId)
+    return timeoutId
+  }
+
+  // Stage 1: Text dissolving starts (500ms)
+  // Also start fading out storm audio
+  addTimeout(() => {
     isDissolving.value = true
     animationStage.value = 1
+    // Start fading out storm (2000ms fade)
+    fadeOutCurrent(2000)
   }, 500)
 
   // Stage 2: Rain slowing, sky lightening (1500ms)
-  setTimeout(() => {
+  addTimeout(() => {
     animationStage.value = 2
     if (rainClearing) {
       rainClearing.setPhase(1)
     }
-    // Start fading out storm gradually - match rain animation timing
-    fadeOutSound('storm', 5000)
   }, 1500)
 
   // Stage 3: Sun emerging, rain sparse (3000ms)
-  setTimeout(() => {
+  addTimeout(() => {
     animationStage.value = 3
     if (rainClearing) {
       rainClearing.setPhase(2)
     }
   }, 3000)
 
+  // Brief silence period - storm should be fully faded by now (2500ms)
+  // Nature starts fading in at 4000ms (1.5s after storm silent)
+  addTimeout(() => {
+    playNature(2000) // 2 second fade in
+  }, 4000)
+
   // Hide text (4500ms - after 4s dissolve completes)
-  setTimeout(() => {
+  addTimeout(() => {
     showText.value = false
   }, 4500)
 
   // Stage 4: Full clearing, rain stops (5500ms)
-  setTimeout(() => {
+  addTimeout(() => {
     animationStage.value = 4
     if (rainClearing) {
       rainClearing.setPhase(3)
     }
-    // Fade in nature sounds after rain is mostly gone
-    fadeInSound('nature', 3000, 0.6)
   }, 5500)
 
   // Stage 5 + first line (6500ms)
-  setTimeout(() => {
+  addTimeout(() => {
     animationStage.value = 5
     showFirstLine.value = true
   }, 6500)
 
   // Second line (7500ms)
-  setTimeout(() => {
+  addTimeout(() => {
     showSecondLine.value = true
   }, 7500)
 
   // Sunrise glow starts (8000ms - after text fades in)
-  setTimeout(() => {
+  addTimeout(() => {
     showSunriseGlow.value = true
   }, 8000)
 
   // Button (8500ms)
-  setTimeout(() => {
+  addTimeout(() => {
     showButton.value = true
   }, 8500)
 
   // First bird (7 seconds after words fade in)
-  setTimeout(() => {
+  addTimeout(() => {
     triggerBird()
   }, 14500) // 7500ms (second line) + 7000ms
 
@@ -274,20 +302,43 @@ const startClearingSequence = () => {
 
 const triggerBird = () => {
   showBird.value = true
-  setTimeout(() => {
+  const timeoutId = setTimeout(() => {
     showBird.value = false
   }, 16000) // Bird animation lasts 16 seconds
+  activeTimeouts.push(timeoutId)
 }
 
-const goHome = () => {
+const exitApp = () => {
   triggerHaptic('medium')
-  // Reset clearing before navigating
+
+  // Stop all audio immediately
+  stopAll()
+
+  // Reset clearing state
   animationStage.value = 0
   if (rainClearing) {
     rainClearing.setPhase(0)
   }
-  // Crossfade from nature back to storm
-  crossfade('nature', 'storm', 2000, 0.3)
+
+  // Try to close the app (works in installed PWA/TWA)
+  // Falls back to navigating home if close doesn't work
+  window.close()
+
+  // Fallback for browser development - navigate to home
+  // This will only run if window.close() didn't work
+  setTimeout(() => {
+    router.push('/home')
+  }, 100)
+}
+
+// DEV: Direct home navigation for testing
+const goHome = () => {
+  triggerHaptic('medium')
+  stopAll()
+  animationStage.value = 0
+  if (rainClearing) {
+    rainClearing.setPhase(0)
+  }
   router.push('/home')
 }
 </script>

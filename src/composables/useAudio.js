@@ -1,12 +1,21 @@
 import { ref } from 'vue'
 
+// Audio States
+const AudioState = {
+  SILENT: 'silent',
+  STORM: 'storm',
+  NATURE: 'nature'
+}
+
 // Shared state (singleton) - persists across all components
 const audioContext = ref(null)
-const activeSounds = ref({})  // Track multiple sounds by key
+const currentState = ref(AudioState.SILENT)
+const activeSource = ref(null)
+const activeGainNode = ref(null)
 const isReady = ref(false)
 const isInitialized = ref(false)
 
-// Load muted state from localStorage
+// Load muted state from localStorage (default: sound ON)
 const loadMutedState = () => {
   try {
     const settings = JSON.parse(localStorage.getItem('downpour_settings') || '{"soundEnabled":true}')
@@ -18,7 +27,6 @@ const loadMutedState = () => {
 const isMuted = ref(loadMutedState())
 
 const audioFiles = {
-  light: '/audio/rain-light.mp3',
   storm: '/audio/storm-heavy.mp3',
   thunder: '/audio/thunder-rumble.mp3',
   nature: '/audio/nature-peaceful.mp3'
@@ -28,13 +36,16 @@ const audioFiles = {
 const audioBufferCache = {}
 
 const initAudio = async () => {
-  if (audioContext.value) return
+  if (audioContext.value) return true
 
   try {
     audioContext.value = new (window.AudioContext || window.webkitAudioContext)()
     isReady.value = true
+    return true
   } catch (e) {
     console.error('Web Audio API not supported:', e)
+    isReady.value = false
+    return false
   }
 }
 
@@ -78,20 +89,58 @@ export function useAudio() {
     }
   }
 
-  // Play ambient/looping sound
-  const playAmbient = async (type, volume = 0.3) => {
-    if (isMuted.value) return
-
+  // Ensure AudioContext is ready
+  const ensureAudioReady = async () => {
     if (!audioContext.value) {
-      await initAudio()
+      const success = await initAudio()
+      if (!success) return false
     }
 
-    if (!isReady.value || !audioContext.value) return
+    if (!isReady.value || !audioContext.value) {
+      return false
+    }
+
+    // Resume context if suspended (mobile autoplay policy)
+    if (audioContext.value.state === 'suspended') {
+      try {
+        await audioContext.value.resume()
+      } catch (e) {
+        console.error('Failed to resume AudioContext:', e)
+        return false
+      }
+    }
+
+    return true
+  }
+
+  // Stop current audio immediately
+  const stopAll = () => {
+    if (activeSource.value) {
+      try {
+        activeSource.value.stop()
+        activeGainNode.value?.disconnect()
+        activeSource.value.disconnect()
+      } catch (e) {
+        // Already stopped
+      }
+      activeSource.value = null
+      activeGainNode.value = null
+    }
+    currentState.value = AudioState.SILENT
+  }
+
+  // Play storm sound (only if not already playing)
+  const playStorm = async () => {
+    if (isMuted.value) return
+    if (currentState.value === AudioState.STORM) return // Already playing
+
+    if (!(await ensureAudioReady())) return
+
+    // Stop any current audio first
+    stopAll()
 
     try {
-      await audioContext.value.resume()
-
-      const audioBuffer = await loadAudioBuffer(type)
+      const audioBuffer = await loadAudioBuffer('storm')
       if (!audioBuffer) return
 
       const source = audioContext.value.createBufferSource()
@@ -99,34 +148,113 @@ export function useAudio() {
       source.loop = true
 
       const gainNode = audioContext.value.createGain()
-      gainNode.gain.value = volume
+      gainNode.gain.value = 0.3
 
       source.connect(gainNode)
       gainNode.connect(audioContext.value.destination)
 
-      // Store in active sounds
-      activeSounds.value[type] = { source, gainNode, volume }
-      source.start()
+      activeSource.value = source
+      activeGainNode.value = gainNode
+      currentState.value = AudioState.STORM
 
-      return { source, gainNode }
+      source.start()
     } catch (e) {
-      console.error('Error playing ambient:', e)
+      console.error('Error playing storm:', e)
     }
   }
 
-  // Play one-shot sound (doesn't stop other sounds)
+  // Fade out current audio and return promise
+  const fadeOutCurrent = (duration = 2000) => {
+    return new Promise((resolve) => {
+      if (!activeGainNode.value || currentState.value === AudioState.SILENT) {
+        resolve()
+        return
+      }
+
+      const startVolume = activeGainNode.value.gain.value
+      const steps = 20
+      const stepTime = duration / steps
+      const volumeStep = startVolume / steps
+      let currentStep = 0
+
+      const fadeInterval = setInterval(() => {
+        currentStep++
+        const newVolume = Math.max(0, startVolume - (volumeStep * currentStep))
+
+        if (activeGainNode.value) {
+          activeGainNode.value.gain.value = newVolume
+        }
+
+        if (currentStep >= steps) {
+          clearInterval(fadeInterval)
+          stopAll()
+          resolve()
+        }
+      }, stepTime)
+    })
+  }
+
+  // Play nature sounds (with fade in)
+  const playNature = async (duration = 2000) => {
+    if (isMuted.value) return
+    if (currentState.value === AudioState.NATURE) return // Already playing
+
+    if (!(await ensureAudioReady())) return
+
+    // Stop any current audio first (should already be stopped after fadeOutCurrent)
+    stopAll()
+
+    try {
+      const audioBuffer = await loadAudioBuffer('nature')
+      if (!audioBuffer) return
+
+      const source = audioContext.value.createBufferSource()
+      source.buffer = audioBuffer
+      source.loop = true
+
+      const gainNode = audioContext.value.createGain()
+      gainNode.gain.value = 0 // Start silent for fade in
+
+      source.connect(gainNode)
+      gainNode.connect(audioContext.value.destination)
+
+      activeSource.value = source
+      activeGainNode.value = gainNode
+      currentState.value = AudioState.NATURE
+
+      source.start()
+
+      // Fade in
+      const targetVolume = 0.4
+      const steps = 20
+      const stepTime = duration / steps
+      const volumeStep = targetVolume / steps
+      let currentStep = 0
+
+      const fadeInterval = setInterval(() => {
+        currentStep++
+        const newVolume = Math.min(targetVolume, volumeStep * currentStep)
+
+        if (activeGainNode.value) {
+          activeGainNode.value.gain.value = newVolume
+        }
+
+        if (currentStep >= steps) {
+          clearInterval(fadeInterval)
+        }
+      }, stepTime)
+    } catch (e) {
+      console.error('Error playing nature:', e)
+    }
+  }
+
+  // Play one-shot sound (thunder) - doesn't affect main audio state
   const playOneShot = async (type, volume = 0.5) => {
     if (isMuted.value) return
 
-    if (!audioContext.value) {
-      await initAudio()
-    }
-
-    if (!isReady.value || !audioContext.value) return
+    if (!(await ensureAudioReady())) return
 
     try {
-      await audioContext.value.resume()
-
       const audioBuffer = await loadAudioBuffer(type)
       if (!audioBuffer) return
 
@@ -135,166 +263,49 @@ export function useAudio() {
       source.loop = false
 
       const gainNode = audioContext.value.createGain()
-      gainNode.gain.value = volume
+      gainNode.gain.value = Math.max(0, Math.min(1, volume))
 
       source.connect(gainNode)
       gainNode.connect(audioContext.value.destination)
 
       source.start()
 
-      // Clean up when done
       source.onended = () => {
-        source.disconnect()
-        gainNode.disconnect()
+        try {
+          gainNode.disconnect()
+          source.disconnect()
+        } catch (e) {
+          // Already disconnected
+        }
       }
     } catch (e) {
       console.error('Error playing one-shot:', e)
     }
   }
 
-  // Fade out a specific sound
-  const fadeOutSound = (type, duration = 2000) => {
-    const sound = activeSounds.value[type]
-    if (!sound) return
-
-    const { gainNode, source } = sound
-    const startVolume = gainNode.gain.value
-    const steps = 20
-    const stepTime = duration / steps
-    const volumeStep = startVolume / steps
-    let currentStep = 0
-
-    const fadeInterval = setInterval(() => {
-      currentStep++
-      const newVolume = Math.max(0, startVolume - (volumeStep * currentStep))
-      gainNode.gain.value = newVolume
-
-      if (currentStep >= steps) {
-        clearInterval(fadeInterval)
-        try {
-          source.stop()
-        } catch (e) {
-          // Already stopped
-        }
-        delete activeSounds.value[type]
-      }
-    }, stepTime)
-  }
-
-  // Fade in a new ambient sound
-  const fadeInSound = async (type, duration = 2000, targetVolume = 0.3) => {
-    if (isMuted.value) return
-
-    if (!audioContext.value) {
-      await initAudio()
-    }
-
-    if (!isReady.value || !audioContext.value) return
-
-    try {
-      await audioContext.value.resume()
-
-      const audioBuffer = await loadAudioBuffer(type)
-      if (!audioBuffer) return
-
-      const source = audioContext.value.createBufferSource()
-      source.buffer = audioBuffer
-      source.loop = true
-
-      const gainNode = audioContext.value.createGain()
-      gainNode.gain.value = 0
-
-      source.connect(gainNode)
-      gainNode.connect(audioContext.value.destination)
-
-      activeSounds.value[type] = { source, gainNode, volume: targetVolume }
-      source.start()
-
-      // Fade in
-      const steps = 20
-      const stepTime = duration / steps
-      const volumeStep = targetVolume / steps
-      let currentStep = 0
-
-      const fadeInterval = setInterval(() => {
-        currentStep++
-        gainNode.gain.value = Math.min(targetVolume, volumeStep * currentStep)
-
-        if (currentStep >= steps) {
-          clearInterval(fadeInterval)
-        }
-      }, stepTime)
-    } catch (e) {
-      console.error('Error fading in sound:', e)
-    }
-  }
-
-  // Crossfade from one sound to another
-  const crossfade = async (fromType, toType, duration = 3000, toVolume = 0.3) => {
-    fadeOutSound(fromType, duration)
-    await fadeInSound(toType, duration, toVolume)
-  }
-
-  // Stop a specific sound immediately
-  const stopSoundByType = (type) => {
-    const sound = activeSounds.value[type]
-    if (sound) {
-      try {
-        sound.source.stop()
-      } catch (e) {
-        // Already stopped
-      }
-      delete activeSounds.value[type]
-    }
-  }
-
-  // Stop all sounds
-  const stopSound = () => {
-    Object.keys(activeSounds.value).forEach(type => {
-      stopSoundByType(type)
-    })
-  }
-
-  // Fade to a new sound (legacy compatibility)
-  const fadeToSound = async (type, volume = 0.3) => {
-    if (isMuted.value) return
-
-    // Fade out all current sounds
-    Object.keys(activeSounds.value).forEach(soundType => {
-      fadeOutSound(soundType, 1000)
-    })
-
-    // Wait a bit then start new sound
-    setTimeout(() => {
-      playAmbient(type, volume)
-    }, 500)
-  }
-
+  // Toggle mute state
   const toggleMute = () => {
     isMuted.value = !isMuted.value
     if (isMuted.value) {
-      stopSound()
+      stopAll()
     }
   }
 
-  // Check if a specific sound is currently playing
-  const isPlaying = (type) => {
-    return !!activeSounds.value[type]
+  // Check if storm is currently playing
+  const isStormPlaying = () => {
+    return currentState.value === AudioState.STORM
   }
 
   return {
     isMuted,
     isReady,
-    activeSounds,
-    isPlaying,
-    playAmbient,
+    currentState,
+    playStorm,
+    playNature,
     playOneShot,
-    fadeOutSound,
-    fadeInSound,
-    crossfade,
-    stopSound,
-    stopSoundByType,
-    fadeToSound,
-    toggleMute
+    stopAll,
+    fadeOutCurrent,
+    toggleMute,
+    isStormPlaying
   }
 }

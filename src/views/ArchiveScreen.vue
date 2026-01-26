@@ -135,12 +135,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '../composables/useLocalStorage'
-import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
 const { getEntriesSortedByDate, deleteEntry } = useLocalStorage()
-const { fadeToSound } = useAudio()
+// Storm continues playing - no audio changes needed on this screen
 const { triggerHaptic } = useHaptics()
 
 const entries = ref([])
@@ -212,7 +211,7 @@ const executeDelete = () => {
 
 const goBack = () => {
   triggerHaptic('medium')
-  fadeToSound('light')
+  // Storm continues playing
   router.push('/home')
 }
 </script>
