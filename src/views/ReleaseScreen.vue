@@ -108,15 +108,7 @@
             @click="exitApp"
             class="touch-target px-8 py-3 bg-amber-200/10 hover:bg-amber-200/20 text-amber-200/80 rounded-full transition-all duration-300 border border-amber-200/20 backdrop-blur-sm active:scale-95"
           >
-            Continue with your day
-          </button>
-
-          <!-- DEV: Temporary home button for testing -->
-          <button
-            @click="goHome"
-            class="mt-4 px-6 py-2 text-amber-200/40 text-sm underline"
-          >
-            [DEV] Return to Home
+            Return to your day
           </button>
         </div>
       </transition>
@@ -320,26 +312,8 @@ const exitApp = () => {
     rainClearing.setPhase(0)
   }
 
-  // Try to close the app (works in installed PWA/TWA)
-  // Falls back to navigating home if close doesn't work
+  // Close the app (works in installed PWA/TWA)
   window.close()
-
-  // Fallback for browser development - navigate to home
-  // This will only run if window.close() didn't work
-  setTimeout(() => {
-    router.push('/home')
-  }, 100)
-}
-
-// DEV: Direct home navigation for testing
-const goHome = () => {
-  triggerHaptic('medium')
-  stopAll()
-  animationStage.value = 0
-  if (rainClearing) {
-    rainClearing.setPhase(0)
-  }
-  router.push('/home')
 }
 </script>
 
