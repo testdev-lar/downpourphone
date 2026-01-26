@@ -39,7 +39,7 @@
 - Removed unused rain-light.mp3
 
 ### What's Next
-1. Update settings icon to minimalist gear/cog design (P0)
+1. ~~Update settings icon to minimalist gear/cog design (P0)~~ DONE
 2. Test on Samsung S24 - verify PWA installation, audio, haptics (P0)
 3. Deploy PWA to public URL (P1)
 4. TWA packaging with Bubblewrap (P1)
@@ -94,9 +94,7 @@
 
 ### Remaining P0 (Launch Blockers)
 
-#### 1. Settings Icon Update
-**Needed:** Minimalist gear/cog SVG icon
-**File:** src/views/HomeScreen.vue
+#### 1. ~~Settings Icon Update~~ DONE
 
 #### 2. Test on Samsung S24
 **Verify:**
@@ -228,7 +226,7 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 **P0 - Blocking:**
 1. ~~Fix audio bugs~~ DONE
 2. ~~Add "Continue with the day" exit button~~ DONE
-3. Update settings icon
+3. ~~Update settings icon~~ DONE
 4. Test on S24
 
 **P1 - Launch:**
