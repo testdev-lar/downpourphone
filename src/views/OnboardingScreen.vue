@@ -241,8 +241,8 @@ const skyStyle = computed(() => {
 })
 
 const showTapIndicator = computed(() => {
-  // Show on screens 0-4, hide on screen 5 (first write)
-  return currentScreen.value < 5
+  // Show on screens 0-3, hide on screen 4 (emotion selector auto-advances) and 5 (first write)
+  return currentScreen.value < 4
 })
 
 onMounted(() => {
@@ -280,6 +280,13 @@ const nextScreen = () => {
 const selectEmotion = (emotion) => {
   triggerHaptic('medium')
   selectedEmotion.value = selectedEmotion.value === emotion ? null : emotion
+
+  // Auto-advance from screen 4 (emotion selector) to screen 5 (first write)
+  if (currentScreen.value === 4 && selectedEmotion.value) {
+    setTimeout(() => {
+      nextScreen()
+    }, 300)
+  }
 }
 
 const handleInput = () => {

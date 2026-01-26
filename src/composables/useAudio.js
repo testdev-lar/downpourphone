@@ -15,6 +15,9 @@ const activeGainNode = ref(null)
 const isReady = ref(false)
 const isInitialized = ref(false)
 
+// Track one-shot sounds (thunder) so they can be stopped immediately
+const oneShotSources = ref([])
+
 // Load muted state from localStorage (default: sound ON)
 const loadMutedState = () => {
   try {
@@ -115,6 +118,7 @@ export function useAudio() {
 
   // Stop current audio immediately
   const stopAll = () => {
+    // Stop main audio source (storm/nature)
     if (activeSource.value) {
       try {
         activeSource.value.stop()
@@ -126,6 +130,19 @@ export function useAudio() {
       activeSource.value = null
       activeGainNode.value = null
     }
+
+    // Stop all one-shot sounds (thunder)
+    oneShotSources.value.forEach(({ source, gainNode }) => {
+      try {
+        source.stop()
+        gainNode?.disconnect()
+        source.disconnect()
+      } catch (e) {
+        // Already stopped
+      }
+    })
+    oneShotSources.value = []
+
     currentState.value = AudioState.SILENT
   }
 
@@ -268,9 +285,18 @@ export function useAudio() {
       source.connect(gainNode)
       gainNode.connect(audioContext.value.destination)
 
+      // Track this one-shot so it can be stopped if muted
+      const oneShotEntry = { source, gainNode }
+      oneShotSources.value.push(oneShotEntry)
+
       source.start()
 
       source.onended = () => {
+        // Remove from tracking array
+        const index = oneShotSources.value.indexOf(oneShotEntry)
+        if (index > -1) {
+          oneShotSources.value.splice(index, 1)
+        }
         try {
           gainNode.disconnect()
           source.disconnect()

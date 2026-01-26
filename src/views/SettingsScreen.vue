@@ -1,6 +1,14 @@
 <template>
-  <div class="min-h-screen flex flex-col safe-area-top safe-area-bottom px-6">
-    <div class="px-6 py-6 border-b border-border bg-bg-primary/95 backdrop-blur-sm">
+  <div class="min-h-screen flex flex-col safe-area-top safe-area-bottom relative">
+    <!-- Mountain silhouettes -->
+    <div class="fixed bottom-0 left-0 right-0 h-[25vh] pointer-events-none z-0">
+      <svg viewBox="0 0 400 100" preserveAspectRatio="none" class="w-full h-full">
+        <path d="M0 100 L0 60 L50 30 L100 50 L150 20 L200 45 L250 25 L300 55 L350 35 L400 50 L400 100 Z" fill="rgba(30, 41, 59, 0.3)"/>
+        <path d="M0 100 L0 70 L80 45 L140 65 L200 40 L280 60 L340 50 L400 70 L400 100 Z" fill="rgba(30, 41, 59, 0.5)"/>
+      </svg>
+    </div>
+
+    <div class="px-6 py-6 border-b border-border bg-bg-primary/95 backdrop-blur-sm relative z-10">
       <div class="flex items-center justify-between max-w-lg mx-auto">
         <button
           @click="goBack"
@@ -18,7 +26,7 @@
       </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto py-6">
+    <div class="flex-1 overflow-y-auto py-6 px-6 relative z-10">
       <div class="max-w-lg mx-auto space-y-6">
         <div class="bg-bg-secondary/40 border border-border rounded-2xl p-4 backdrop-blur-sm">
           <div class="flex items-center justify-between">
@@ -45,7 +53,7 @@
             @click="handleReplayTutorial"
             class="touch-target w-full flex items-center justify-between"
           >
-            <div>
+            <div class="text-left">
               <p class="text-text-primary font-medium">Replay Tutorial</p>
               <p class="text-text-muted text-sm">See the onboarding again</p>
             </div>
