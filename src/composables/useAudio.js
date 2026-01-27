@@ -118,6 +118,11 @@ export function useAudio() {
 
   // Stop current audio immediately
   const stopAll = () => {
+    console.log('[Audio] stopAll called', {
+      hadActiveSource: !!activeSource.value,
+      previousState: currentState.value
+    })
+
     // Stop main audio source (storm/nature)
     if (activeSource.value) {
       try {
@@ -144,21 +149,40 @@ export function useAudio() {
     oneShotSources.value = []
 
     currentState.value = AudioState.SILENT
+    console.log('[Audio] stopAll complete, state now SILENT')
   }
 
   // Play storm sound (only if not already playing)
   const playStorm = async () => {
-    if (isMuted.value) return
-    if (currentState.value === AudioState.STORM) return // Already playing
+    console.log('[Audio] playStorm called', {
+      isMuted: isMuted.value,
+      currentState: currentState.value,
+      hasActiveGainNode: !!activeGainNode.value
+    })
 
-    if (!(await ensureAudioReady())) return
+    if (isMuted.value) {
+      console.log('[Audio] playStorm: Muted, skipping')
+      return
+    }
+    if (currentState.value === AudioState.STORM) {
+      console.log('[Audio] playStorm: Already playing storm')
+      return // Already playing
+    }
+
+    if (!(await ensureAudioReady())) {
+      console.log('[Audio] playStorm: Audio not ready')
+      return
+    }
 
     // Stop any current audio first
     stopAll()
 
     try {
       const audioBuffer = await loadAudioBuffer('storm')
-      if (!audioBuffer) return
+      if (!audioBuffer) {
+        console.log('[Audio] playStorm: Failed to load storm buffer')
+        return
+      }
 
       const source = audioContext.value.createBufferSource()
       source.buffer = audioBuffer
@@ -175,6 +199,11 @@ export function useAudio() {
       currentState.value = AudioState.STORM
 
       source.start()
+
+      console.log('[Audio] playStorm: Storm started successfully', {
+        hasActiveGainNode: !!activeGainNode.value,
+        currentState: currentState.value
+      })
     } catch (e) {
       console.error('Error playing storm:', e)
     }
