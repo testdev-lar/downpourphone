@@ -217,7 +217,7 @@ export function useAudio() {
   }
 
   // Fade out current audio and return promise
-  const fadeOutCurrent = (duration = 2000) => {
+  const fadeOutCurrent = (duration = 4000) => {
     return new Promise((resolve) => {
       if (!activeGainNode.value || currentState.value === AudioState.SILENT) {
         console.log('[Audio] fadeOutCurrent: No active audio to fade')

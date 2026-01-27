@@ -221,9 +221,9 @@ const startClearingSequence = () => {
   addTimeout(async () => {
     isDissolving.value = true
     animationStage.value = 1
-    // Start fading out storm (2000ms fade)
+    // Start fading out storm (4000ms fade)
     try {
-      await fadeOutCurrent(2000)
+      await fadeOutCurrent(4000)
       console.log('[Audio] Fade completed successfully')
     } catch (err) {
       console.error('[Audio] Fade error:', err)
