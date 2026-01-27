@@ -184,9 +184,16 @@ export function useAudio() {
   const fadeOutCurrent = (duration = 2000) => {
     return new Promise((resolve) => {
       if (!activeGainNode.value || currentState.value === AudioState.SILENT) {
+        console.log('[Audio] fadeOutCurrent: No active audio to fade')
         resolve()
         return
       }
+
+      console.log('[Audio] fadeOutCurrent: Starting fade', {
+        duration,
+        currentState: currentState.value,
+        startVolume: activeGainNode.value.gain.value
+      })
 
       const startVolume = activeGainNode.value.gain.value
       const steps = 20
@@ -200,10 +207,14 @@ export function useAudio() {
 
         if (activeGainNode.value) {
           activeGainNode.value.gain.value = newVolume
+          if (currentStep % 5 === 0) { // Log every 5 steps
+            console.log('[Audio] Fading...', { step: currentStep, volume: newVolume.toFixed(3) })
+          }
         }
 
         if (currentStep >= steps) {
           clearInterval(fadeInterval)
+          console.log('[Audio] Fade complete, stopping all audio')
           stopAll()
           resolve()
         }
@@ -312,6 +323,11 @@ export function useAudio() {
   // Toggle mute state
   const toggleMute = () => {
     isMuted.value = !isMuted.value
+
+    // Save to localStorage immediately
+    const settings = { soundEnabled: !isMuted.value }
+    localStorage.setItem('downpour_settings', JSON.stringify(settings))
+
     if (isMuted.value) {
       stopAll()
     }

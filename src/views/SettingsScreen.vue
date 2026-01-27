@@ -137,10 +137,7 @@ const showConfirmDialog = ref(false)
 
 const toggleSound = () => {
   triggerHaptic('medium')
-  toggleMute()
-  // Save the new state to localStorage
-  const settings = { soundEnabled: !isMuted.value }
-  localStorage.setItem('downpour_settings', JSON.stringify(settings))
+  toggleMute() // Now handles localStorage internally
 
   // If sound was just enabled, start playing storm immediately
   if (!isMuted.value) {
