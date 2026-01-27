@@ -169,8 +169,13 @@ export function useAudio() {
       return // Already playing
     }
 
+    // Set state IMMEDIATELY to prevent race condition
+    currentState.value = AudioState.STORM
+    console.log('[Audio] playStorm: State set to STORM immediately')
+
     if (!(await ensureAudioReady())) {
       console.log('[Audio] playStorm: Audio not ready')
+      currentState.value = AudioState.SILENT // Reset on failure
       return
     }
 
@@ -181,6 +186,7 @@ export function useAudio() {
       const audioBuffer = await loadAudioBuffer('storm')
       if (!audioBuffer) {
         console.log('[Audio] playStorm: Failed to load storm buffer')
+        currentState.value = AudioState.SILENT // Reset on failure
         return
       }
 
@@ -196,7 +202,6 @@ export function useAudio() {
 
       activeSource.value = source
       activeGainNode.value = gainNode
-      currentState.value = AudioState.STORM
 
       source.start()
 
@@ -206,6 +211,7 @@ export function useAudio() {
       })
     } catch (e) {
       console.error('Error playing storm:', e)
+      currentState.value = AudioState.SILENT // Reset on error
     }
   }
 
@@ -253,17 +259,32 @@ export function useAudio() {
 
   // Play nature sounds (with fade in)
   const playNature = async (duration = 2000) => {
+    console.log('[Audio] playNature called', {
+      isMuted: isMuted.value,
+      currentState: currentState.value
+    })
+
     if (isMuted.value) return
     if (currentState.value === AudioState.NATURE) return // Already playing
 
-    if (!(await ensureAudioReady())) return
+    // Set state IMMEDIATELY to prevent race condition
+    currentState.value = AudioState.NATURE
+    console.log('[Audio] playNature: State set to NATURE immediately')
+
+    if (!(await ensureAudioReady())) {
+      currentState.value = AudioState.SILENT // Reset on failure
+      return
+    }
 
     // Stop any current audio first (should already be stopped after fadeOutCurrent)
     stopAll()
 
     try {
       const audioBuffer = await loadAudioBuffer('nature')
-      if (!audioBuffer) return
+      if (!audioBuffer) {
+        currentState.value = AudioState.SILENT // Reset on failure
+        return
+      }
 
       const source = audioContext.value.createBufferSource()
       source.buffer = audioBuffer
@@ -277,9 +298,10 @@ export function useAudio() {
 
       activeSource.value = source
       activeGainNode.value = gainNode
-      currentState.value = AudioState.NATURE
 
       source.start()
+
+      console.log('[Audio] playNature: Nature started, fading in')
 
       // Fade in
       const targetVolume = 0.4
@@ -298,10 +320,12 @@ export function useAudio() {
 
         if (currentStep >= steps) {
           clearInterval(fadeInterval)
+          console.log('[Audio] playNature: Fade in complete')
         }
       }, stepTime)
     } catch (e) {
       console.error('Error playing nature:', e)
+      currentState.value = AudioState.SILENT // Reset on error
     }
   }
 
