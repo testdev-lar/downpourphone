@@ -317,8 +317,19 @@ const exitApp = () => {
     rainClearing.setPhase(0)
   }
 
-  // Close the app (works in installed PWA/TWA)
+  // Try to close/exit the app (multiple fallbacks for TWA compatibility)
+  // Method 1: window.close() - works in some PWA contexts
   window.close()
+
+  // Method 2: Navigate back through history until app closes
+  // This works in TWA when window.close() doesn't
+  setTimeout(() => {
+    // If we're still here, window.close() didn't work
+    // Go back to the very beginning of history
+    if (window.history.length > 1) {
+      window.history.go(-(window.history.length - 1))
+    }
+  }, 100)
 }
 </script>
 
