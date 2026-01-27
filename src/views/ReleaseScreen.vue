@@ -218,11 +218,16 @@ const startClearingSequence = () => {
 
   // Stage 1: Text dissolving starts (500ms)
   // Also start fading out storm audio
-  addTimeout(() => {
+  addTimeout(async () => {
     isDissolving.value = true
     animationStage.value = 1
     // Start fading out storm (2000ms fade)
-    fadeOutCurrent(2000)
+    try {
+      await fadeOutCurrent(2000)
+      console.log('[Audio] Fade completed successfully')
+    } catch (err) {
+      console.error('[Audio] Fade error:', err)
+    }
   }, 500)
 
   // Stage 2: Rain slowing, sky lightening (1500ms)
