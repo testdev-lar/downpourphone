@@ -202,6 +202,7 @@ export function useAudio() {
 
       activeSource.value = source
       activeGainNode.value = gainNode
+      currentState.value = AudioState.STORM // Set state after stopAll cleared it
 
       source.start()
 
