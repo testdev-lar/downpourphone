@@ -246,11 +246,11 @@ const startClearingSequence = () => {
     }
   }, 3000)
 
-  // Brief silence period - storm should be fully faded by now (2500ms)
-  // Nature starts fading in at 4000ms (1.5s after storm silent)
+  // Brief silence period - storm fades from 500ms to 4500ms (4000ms duration)
+  // Nature starts fading in at 5000ms (500ms after storm fully silent)
   addTimeout(() => {
     playNature(2000) // 2 second fade in
-  }, 4000)
+  }, 5000)
 
   // Hide text (4500ms - after 4s dissolve completes)
   addTimeout(() => {

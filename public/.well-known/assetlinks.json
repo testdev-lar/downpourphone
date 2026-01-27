@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.downpour.twa",
+    "sha256_cert_fingerprints": ["C0:F9:D9:26:11:48:9E:07:3A:8E:93:10:05:2D:54:A9:90:B2:85:64:7B:FA:4B:7A:E4:41:B0:50:67:00:67:04"]
+  }
+}]

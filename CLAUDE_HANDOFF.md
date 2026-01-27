@@ -104,7 +104,25 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-01-26)
+### Latest Session (2026-01-27)
+**TWA Packaging for Play Store**
+
+1. **Bubblewrap TWA initialized** - Project configured for Android packaging
+2. **Signing keystore created** - `android.keystore` generated for APK signing
+3. **twa-manifest.json generated** with configuration:
+   - Package ID: `app.downpour.twa`
+   - Host: `downpour.netlify.app`
+   - Theme colors match dark stormy aesthetic (#1A1D23)
+   - Portrait orientation
+   - Min SDK 21 (Android 5.0+)
+4. **APK build in progress** via `bubblewrap build`
+
+**Generated Files:**
+- `android.keystore` - Signing key (KEEP SAFE - required for all future updates)
+- `twa-manifest.json` - TWA configuration
+- `app/` - Android project directory
+
+### Previous Session (2026-01-26)
 **S24 Testing and UI Fixes**
 
 1. **Settings icon updated** to minimalist gear/cog design
@@ -203,11 +221,13 @@ All P0 items done:
 - ~~S24 testing~~ DONE (basic functionality verified)
 
 ### P1 - Play Store Deployment
-1. Deploy PWA to public URL (Netlify/Vercel)
-2. TWA packaging with Bubblewrap
-3. Privacy policy hosting
-4. Screenshots on S24
-5. Play Store listing and submission
+1. ~~Deploy PWA to public URL~~ DONE (downpour.netlify.app)
+2. **TWA packaging with Bubblewrap** ← IN PROGRESS (APK building)
+3. Configure digital asset links
+4. Test APK on Samsung S24
+5. Privacy policy hosting
+6. Screenshots on S24
+7. Play Store listing and submission
 
 ---
 
@@ -286,6 +306,6 @@ https://github.com/testdev-lar/downpourphone
 - Writing prompts rotate **after each release** - 10 variations stored in sessionStorage
 - Entry deletion uses **`deleteEntry(id)`** from useLocalStorage.js
 - Main development branch is **`optimistic-bardeen`**
-- Working directory is **`C:\Users\bayle\.claude-worktrees\Downpour Round 2 - Claude Code\optimistic-bardeen`**
+- Working directory is **`C:\Users\bayle\Desktop\Downpour Round 2 - Claude Code`**
 - Target deployment: **Google Play Store** via TWA (Trusted Web Activity)
 - Testing device: **Samsung S24**
