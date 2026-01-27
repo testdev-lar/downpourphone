@@ -50,9 +50,31 @@
 ### What's Next
 1. ~~Update settings icon to minimalist gear/cog design (P0)~~ DONE
 2. ~~Test on Samsung S24 - basic functionality verified (P0)~~ DONE
-3. Deploy PWA to public URL (P1)
-4. TWA packaging with Bubblewrap (P1)
+3. ~~Deploy PWA to public URL (P1)~~ DONE - downpour.netlify.app
+4. **TWA packaging with Bubblewrap (P1) ← CURRENT**
 5. Play Store submission (P1)
+
+---
+
+## TWA Packaging Progress (Google Play Store)
+
+### Checklist
+- [ ] Step 1: Check prerequisites (Node, npm, Java)
+- [ ] Step 2: Install Bubblewrap CLI
+- [ ] Step 3: Create app icons (512x512)
+- [ ] Step 4: Initialize TWA with Bubblewrap
+- [ ] Step 5: Review generated configuration
+- [ ] Step 6: Build the APK
+- [ ] Step 7: Configure digital asset links
+- [ ] Step 8: Test APK on Samsung S24
+- [ ] Step 9: Generate AAB for Play Store
+- [ ] Step 10: Prepare Play Store assets
+
+**Current Status:** PWA deployed to downpour.netlify.app ✅
+
+**Next Action:** Check prerequisites and install required tools
+
+**Reference:** See detailed step-by-step guide in plan file
 
 ---
 
