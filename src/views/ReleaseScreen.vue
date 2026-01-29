@@ -323,26 +323,9 @@ const exitApp = () => {
     rainClearing.setPhase(0)
   }
 
-  // TWA exit strategy:
-  // 1. Try window.close() first (works in some PWA/TWA contexts)
-  // 2. If that fails, navigate back to previous screen
-  //    The user can then use Android's back button to exit naturally
-  try {
-    window.close()
-  } catch (e) {
-    // Ignore close failures
-  }
-
-  // If still here after 100ms, window.close didn't work
-  // Just go back once - user can use Android back button from there
-  setTimeout(() => {
-    if (window.history.length > 1) {
-      window.history.back()
-    } else {
-      // If no history, go to home as fallback
-      router.push('/')
-    }
-  }, 100)
+  // TWA cannot be closed programmatically (Android security restriction)
+  // Navigate to home screen - user can exit via Android back gesture
+  router.push('/home')
 }
 </script>
 
