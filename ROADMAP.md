@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-27
 
 ## Quick Reference
 
@@ -64,17 +64,25 @@
 - [x] Step 3: Create app icons (512x512)
 - [x] Step 4: Initialize TWA with Bubblewrap
 - [x] Step 5: Review generated configuration
-- [ ] Step 6: Build the APK ← IN PROGRESS
-- [ ] Step 7: Configure digital asset links
-- [ ] Step 8: Test APK on Samsung S24
-- [ ] Step 9: Generate AAB for Play Store
+- [x] Step 6: Build the APK ✅
+- [ ] Step 7: Configure digital asset links ← CURRENT
+- [x] Step 8: Test APK on Samsung S24 ✅
+- [x] Step 9: Generate AAB for Play Store ✅ (built alongside APK)
 - [ ] Step 10: Prepare Play Store assets
 
-**Current Status:** TWA initialized, APK build in progress ✅
+**Current Status:** APK built and tested on S24. Digital asset links needed to hide URL bar.
 
-**Next Action:** Complete APK build, then configure digital asset links
+**Issues Found During Testing:**
+- URL bar showing at top (needs digital asset links - Step 7)
+- App icon has white border (need to update icon with solid background)
+- TWA shares localStorage with Chrome (onboarding skipped if site visited before)
 
-**Reference:** See detailed step-by-step guide in plan file
+**Next Action:** Configure digital asset links, fix icon, rebuild APK
+
+**Generated Files:**
+- `app-release-signed.apk` - For testing
+- `app-release-bundle.aab` - For Play Store submission
+- `android.keystore` - Signing key (KEEP SAFE!)
 
 ---
 

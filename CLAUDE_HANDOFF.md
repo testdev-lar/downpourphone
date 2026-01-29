@@ -115,12 +115,26 @@ State is shared via Vue's provide/inject from `App.vue`.
    - Theme colors match dark stormy aesthetic (#1A1D23)
    - Portrait orientation
    - Min SDK 21 (Android 5.0+)
-4. **APK build in progress** via `bubblewrap build`
+4. **APK built successfully** - Both APK and AAB generated
+5. **Tested on Samsung S24** - App installs and runs
+
+**Issues Found During Testing:**
+- URL bar showing at top of app (needs digital asset links)
+- App icon has white border (needs solid background color instead of transparent)
+- TWA shares localStorage with Chrome (onboarding skipped if user visited site in Chrome before)
 
 **Generated Files:**
 - `android.keystore` - Signing key (KEEP SAFE - required for all future updates)
 - `twa-manifest.json` - TWA configuration
 - `app/` - Android project directory
+- `app-release-signed.apk` - For testing
+- `app-release-bundle.aab` - For Play Store submission
+
+**Next Steps:**
+1. Configure digital asset links (to hide URL bar)
+2. Update app icon with solid #1A1D23 background
+3. Rebuild APK
+4. Prepare Play Store assets
 
 ### Previous Session (2026-01-26)
 **S24 Testing and UI Fixes**
