@@ -22,7 +22,15 @@
         
         <h1 class="text-xl font-light text-text-primary">{{ entryCountText }}</h1>
         
-        <div class="w-12"></div>
+        <button
+          @click="confirmClear"
+          class="touch-target w-12 h-12 flex items-center justify-center rounded-full hover:bg-red-500/10 transition-colors"
+          title="Clear all entries"
+        >
+          <svg viewBox="0 0 24 24" class="w-5 h-5 text-text-muted hover:text-red-400" fill="none">
+            <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
     
@@ -136,6 +144,31 @@
         Thought deleted
       </div>
     </transition>
+
+    <!-- Clear all data confirmation modal -->
+    <div
+      v-if="showClearConfirm"
+      class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center px-6 z-50"
+    >
+      <div class="bg-bg-secondary border border-border rounded-2xl p-6 max-w-sm w-full backdrop-blur-sm">
+        <h3 class="text-xl font-light text-text-primary mb-2">Clear All Data?</h3>
+        <p class="text-text-muted mb-6">This will delete all your entries. This cannot be undone.</p>
+        <div class="flex gap-3">
+          <button
+            @click="showClearConfirm = false"
+            class="touch-target flex-1 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary hover:bg-bg-secondary/80 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            @click="clearAllData"
+            class="touch-target flex-1 py-3 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/30 transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -146,7 +179,7 @@ import { useLocalStorage } from '../composables/useLocalStorage'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { getEntriesSortedByDate, deleteEntry } = useLocalStorage()
+const { getEntriesSortedByDate, deleteEntry, clearAllEntries } = useLocalStorage()
 // Storm continues playing - no audio changes needed on this screen
 const { triggerHaptic } = useHaptics()
 
@@ -155,6 +188,7 @@ const expandedEntries = ref(new Set())
 const deletingEntry = ref(null)
 const showDeleteConfirm = ref(false)
 const showDeleteFeedback = ref(false)
+const showClearConfirm = ref(false)
 
 const entryCountText = computed(() => {
   const count = entries.value.length
@@ -220,6 +254,18 @@ const executeDelete = () => {
 const goBack = () => {
   triggerHaptic('medium')
   // Storm continues playing
+  router.push('/home')
+}
+
+const confirmClear = () => {
+  triggerHaptic('medium')
+  showClearConfirm.value = true
+}
+
+const clearAllData = () => {
+  triggerHaptic('medium')
+  clearAllEntries()
+  showClearConfirm.value = false
   router.push('/home')
 }
 </script>

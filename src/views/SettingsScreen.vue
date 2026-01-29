@@ -64,23 +64,6 @@
           </button>
         </div>
 
-        <div class="bg-bg-secondary/40 border border-border rounded-2xl overflow-hidden backdrop-blur-sm">
-          <button
-            @click="confirmClear"
-            class="touch-target w-full px-4 py-4 flex items-center gap-3 text-left hover:bg-red-500/10 transition-colors"
-          >
-            <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" class="w-5 h-5 text-red-400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-red-400 font-medium">Clear All Data</p>
-              <p class="text-text-muted text-sm">Delete all your entries</p>
-            </div>
-          </button>
-        </div>
-
         <div class="bg-bg-secondary/40 border border-border rounded-2xl p-4 backdrop-blur-sm">
           <div>
             <p class="text-text-primary font-medium mb-1">About</p>
@@ -116,46 +99,17 @@
       </div>
     </div>
 
-    <div
-      v-if="showConfirmDialog"
-      class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center px-6 z-50"
-    >
-      <div class="bg-bg-secondary border border-border rounded-2xl p-6 max-w-sm w-full backdrop-blur-sm">
-        <h3 class="text-xl font-light text-text-primary mb-2">Clear All Data?</h3>
-        <p class="text-text-muted mb-6">This will delete all your entries. This cannot be undone.</p>
-
-        <div class="flex gap-3">
-          <button
-            @click="showConfirmDialog = false"
-            class="touch-target flex-1 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary hover:bg-bg-secondary/80 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            @click="clearAllData"
-            class="touch-target flex-1 py-3 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/30 transition-colors"
-          >
-            Clear
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useLocalStorage } from '../composables/useLocalStorage'
 import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { clearAllEntries } = useLocalStorage()
 const { toggleMute, isMuted, stopAll, playStorm } = useAudio()
 const { triggerHaptic } = useHaptics()
-
-const showConfirmDialog = ref(false)
 
 const toggleSound = () => {
   triggerHaptic('medium')
@@ -172,19 +126,6 @@ const handleReplayTutorial = () => {
   localStorage.removeItem('downpour_onboarding_complete')
   // Storm continues playing through onboarding
   router.push('/onboarding')
-}
-
-const confirmClear = () => {
-  triggerHaptic('medium')
-  showConfirmDialog.value = true
-}
-
-const clearAllData = () => {
-  triggerHaptic('medium')
-  clearAllEntries()
-  showConfirmDialog.value = false
-  // Storm continues playing - just navigate home
-  router.push('/home')
 }
 
 const goBack = () => {
