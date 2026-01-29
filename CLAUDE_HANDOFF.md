@@ -33,11 +33,11 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 
 1. **TitleScreen.vue** - Landing page with "Downpour" title and "Begin" button (no icon)
 2. **OnboardingScreen.vue** - First-time user tutorial (5 screens - sound toggle removed)
-3. **HomeScreen.vue** - Main page with "Let it fall away" button, links to Archive and Settings
+3. **HomeScreen.vue** - Main page with "Let it fall away" button, `?` help icon (opens guide modal), Settings icon, Archive icon
 4. **WriteScreen.vue** - Textarea for writing (280 char limit), emotion tags, "Release" button
 5. **ReleaseScreen.vue** - Animated sequence: text dissolves, sky clears, "Continue with your day" button exits app
 6. **ArchiveScreen.vue** - "Puddle" - list of past entries, expandable cards
-7. **SettingsScreen.vue** - Sound toggle, replay tutorial, clear all data
+7. **SettingsScreen.vue** - Sound toggle, replay tutorial, clear all data, "Connect with creator" link (@ascensciana on X)
 
 ---
 
@@ -104,14 +104,38 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-01-27)
+### Latest Session (2026-01-29)
+**UX Improvements: Guide, Copy, Icon, Creator Link**
+
+1. **"How to use Downpour" guide added** - `?` icon on home screen opens modal with:
+   - "When to use it" - Describes emotional moments suited for the app
+   - "What to do" - Simple instructions: write, release, close app
+   - "The idea" - Not about tracking/analyzing, just releasing
+   - "Your archive" - Saved locally, optional to revisit
+
+2. **Onboarding copy revised** - Multiple iterations to sound less AI-written:
+   - Changed "No analysis. No fixing. No judgment." → "There's nothing to solve here."
+   - Changed "Your words dissolve from view" → "Your thoughts dissolve from view."
+   - Changed archive line to "They're kept quietly in your archive. You can choose whether to revisit."
+   - Changed "Just... let it out." → "Just...let it out." (no space after ellipsis)
+   - Removed "Everything stays on your phone." and "This is release, not reflection."
+
+3. **Full-bleed app icon** - Replaced all icons with new full-bleed design to fix icon not filling launcher space on S24
+
+4. **Creator link in Settings** - Added "Connect with the creator" card linking to @ascensciana on X
+
+5. **Domain updated** - Now using `downpour2.netlify.app`
+
+6. **TWA version 6** - Bumped for icon and domain changes
+
+### Previous Session (2026-01-27)
 **TWA Packaging for Play Store**
 
 1. **Bubblewrap TWA initialized** - Project configured for Android packaging
 2. **Signing keystore created** - `android.keystore` generated for APK signing
 3. **twa-manifest.json generated** with configuration:
    - Package ID: `app.downpour.twa`
-   - Host: `downpour.netlify.app`
+   - Host: `downpour2.netlify.app`
    - Theme colors match dark stormy aesthetic (#1A1D23)
    - Portrait orientation
    - Min SDK 21 (Android 5.0+)
@@ -119,8 +143,8 @@ State is shared via Vue's provide/inject from `App.vue`.
 5. **Tested on Samsung S24** - App installs and runs
 
 **Issues Found During Testing:**
-- URL bar showing at top of app (needs digital asset links)
-- App icon has white border (needs solid background color instead of transparent)
+- ~~URL bar showing at top of app~~ FIXED - digital asset links configured
+- ~~App icon has white border~~ FIXED - full-bleed icon implemented
 - TWA shares localStorage with Chrome (onboarding skipped if user visited site in Chrome before)
 
 **Generated Files:**
@@ -129,12 +153,6 @@ State is shared via Vue's provide/inject from `App.vue`.
 - `app/` - Android project directory
 - `app-release-signed.apk` - For testing
 - `app-release-bundle.aab` - For Play Store submission
-
-**Next Steps:**
-1. Configure digital asset links (to hide URL bar)
-2. Update app icon with solid #1A1D23 background
-3. Rebuild APK
-4. Prepare Play Store assets
 
 ### Previous Session (2026-01-26)
 **S24 Testing and UI Fixes**
@@ -235,10 +253,10 @@ All P0 items done:
 - ~~S24 testing~~ DONE (basic functionality verified)
 
 ### P1 - Play Store Deployment
-1. ~~Deploy PWA to public URL~~ DONE (downpour.netlify.app)
-2. **TWA packaging with Bubblewrap** ← IN PROGRESS (APK building)
-3. Configure digital asset links
-4. Test APK on Samsung S24
+1. ~~Deploy PWA to public URL~~ DONE (downpour2.netlify.app)
+2. ~~TWA packaging with Bubblewrap~~ DONE (APK/AAB built, version 6)
+3. ~~Configure digital asset links~~ DONE (URL bar hidden)
+4. ~~Test APK on Samsung S24~~ DONE
 5. Privacy policy hosting
 6. Screenshots on S24
 7. Play Store listing and submission

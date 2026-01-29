@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-01-27
+**Last Updated:** 2026-01-29
 
 ## Quick Reference
 
@@ -12,6 +12,8 @@
 | **Tech Stack** | Vue 3 + Vite + Tailwind + Web Audio API |
 | **Data Storage** | localStorage (no backend) |
 | **Testing Device** | Samsung S24 |
+| **Live URL** | downpour2.netlify.app |
+| **TWA Version** | 6 |
 
 ---
 
@@ -30,7 +32,16 @@
 - PWA manifest and service worker configured
 - "Continue with your day" exit button on release screen
 
-### What's Fixed (This Session - 2026-01-26)
+### What's Fixed (This Session - 2026-01-29)
+- "How to use Downpour" guide added to home screen (`?` icon opens modal)
+- Onboarding copy revised to sound less AI-written (multiple iterations)
+- Full-bleed app icon implemented (fixes launcher icon not filling space on S24)
+- "Connect with the creator" link added to Settings (@ascensciana on X)
+- Domain updated to downpour2.netlify.app
+- Digital asset links configured (URL bar hidden)
+- TWA version bumped to 6
+
+### What's Fixed (Previous Session - 2026-01-26)
 - Settings icon updated to minimalist gear/cog design
 - Mountain silhouettes added to all stormy screens (Title, Home, Write, Archive, Settings)
 - Onboarding auto-advances when emotion tag selected (screen 4)
@@ -50,9 +61,12 @@
 ### What's Next
 1. ~~Update settings icon to minimalist gear/cog design (P0)~~ DONE
 2. ~~Test on Samsung S24 - basic functionality verified (P0)~~ DONE
-3. ~~Deploy PWA to public URL (P1)~~ DONE - downpour.netlify.app
-4. **TWA packaging with Bubblewrap (P1) ← CURRENT**
-5. Play Store submission (P1)
+3. ~~Deploy PWA to public URL (P1)~~ DONE - downpour2.netlify.app
+4. ~~TWA packaging with Bubblewrap (P1)~~ DONE - version 6
+5. ~~Digital asset links configured (P1)~~ DONE
+6. ~~Full-bleed icon implemented (P1)~~ DONE
+7. **Play Store assets (P1) ← CURRENT** (screenshots, feature graphic, privacy policy)
+8. Play Store submission (P1)
 
 ---
 
@@ -61,23 +75,23 @@
 ### Checklist
 - [x] Step 1: Check prerequisites (Node, npm, Java)
 - [x] Step 2: Install Bubblewrap CLI
-- [x] Step 3: Create app icons (512x512)
+- [x] Step 3: Create app icons (512x512) - full-bleed version
 - [x] Step 4: Initialize TWA with Bubblewrap
 - [x] Step 5: Review generated configuration
 - [x] Step 6: Build the APK ✅
-- [ ] Step 7: Configure digital asset links ← CURRENT
+- [x] Step 7: Configure digital asset links ✅ (URL bar hidden)
 - [x] Step 8: Test APK on Samsung S24 ✅
 - [x] Step 9: Generate AAB for Play Store ✅ (built alongside APK)
-- [ ] Step 10: Prepare Play Store assets
+- [ ] Step 10: Prepare Play Store assets ← CURRENT
 
-**Current Status:** APK built and tested on S24. Digital asset links needed to hide URL bar.
+**Current Status:** APK built and tested. Digital asset links configured. Full-bleed icon implemented. Ready for Play Store assets.
 
-**Issues Found During Testing:**
-- URL bar showing at top (needs digital asset links - Step 7)
-- App icon has white border (need to update icon with solid background)
-- TWA shares localStorage with Chrome (onboarding skipped if site visited before)
+**Issues Resolved:**
+- ~~URL bar showing at top~~ FIXED - digital asset links configured
+- ~~App icon has white border~~ FIXED - full-bleed icon implemented
+- TWA shares localStorage with Chrome (known limitation - not blocking)
 
-**Next Action:** Configure digital asset links, fix icon, rebuild APK
+**Next Action:** Prepare Play Store assets (screenshots, feature graphic, privacy policy)
 
 **Generated Files:**
 - `app-release-signed.apk` - For testing
@@ -115,10 +129,12 @@
 
 **Onboarding & UX:**
 - 5-screen tutorial: Text screens (0-3), emotion selector (4), first write (5)
+- "How to use Downpour" guide accessible via `?` icon on home screen
 - Haptic feedback: light (10ms), medium (20ms), heavy (30ms)
 - Smooth sky transitions via color interpolation
 - Bird animations during release
 - "Continue with your day" exit button
+- "Connect with the creator" link to @ascensciana on X in Settings
 
 **Data & Persistence:**
 - localStorage: `downpour_entries`, `downpour_settings`
@@ -270,11 +286,13 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 4. ~~Test on S24~~ DONE (basic testing complete)
 
 **P1 - Launch:**
-1. Deploy PWA to public URL
-2. TWA packaging (Bubblewrap)
-3. Privacy policy hosting
-4. Screenshots on S24
-5. Play Store submission
+1. ~~Deploy PWA to public URL~~ DONE (downpour2.netlify.app)
+2. ~~TWA packaging (Bubblewrap)~~ DONE (version 6)
+3. ~~Digital asset links~~ DONE
+4. ~~Full-bleed icon~~ DONE
+5. Privacy policy hosting
+6. Screenshots on S24
+7. Play Store submission
 
 **P2 - Post-Launch:**
 - Export functionality
@@ -290,9 +308,10 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 
 **Screens:**
 - src/views/TitleScreen.vue (playStorm on mount, mountains)
-- src/views/OnboardingScreen.vue (5 screens, auto-advance on emotion)
+- src/views/OnboardingScreen.vue (5 screens, auto-advance on emotion, revised copy)
 - src/views/ReleaseScreen.vue ("Continue with your day" button)
-- src/views/HomeScreen.vue (gear icon, mountains, nav z-index fixed)
+- src/views/HomeScreen.vue (`?` guide icon + modal, gear icon, mountains)
+- src/views/SettingsScreen.vue (sound toggle, replay tutorial, clear data, creator link)
 
 **Data:**
 - src/composables/useLocalStorage.js
