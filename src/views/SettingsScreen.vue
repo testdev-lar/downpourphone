@@ -91,6 +91,28 @@
             </p>
           </div>
         </div>
+
+        <div class="bg-bg-secondary/40 border border-border rounded-2xl overflow-hidden backdrop-blur-sm">
+          <a
+            href="https://x.com/ascensciana"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="touch-target w-full px-4 py-4 flex items-center gap-3 text-left hover:bg-accent-light/10 transition-colors"
+          >
+            <div class="w-10 h-10 rounded-full bg-accent-light/10 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" class="w-5 h-5 text-accent-light" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-text-primary font-medium">Connect with the creator</p>
+              <p class="text-text-muted text-sm">@ascensciana on X</p>
+            </div>
+            <svg viewBox="0 0 24 24" class="w-6 h-6 text-text-muted" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
 
