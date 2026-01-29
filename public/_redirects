@@ -1,0 +1,5 @@
+# Serve .well-known files directly (for TWA digital asset links)
+/.well-known/*  /.well-known/:splat  200
+
+# SPA fallback - all other routes go to index.html
+/*  /index.html  200
