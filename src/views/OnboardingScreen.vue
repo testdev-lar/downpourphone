@@ -210,13 +210,14 @@ const screens = [
     lines: [
       'Emotions are weather passing through you.',
       'Here, you can let them fall like rain.',
-      'No analysis. No fixing. No judgment.'
+      "You don't have to understand it. There's nothing to solve here."
     ]
   },
   {
     lines: [
       'What you write dissolves from view.',
-      "It's saved in your archive, untouched.",
+      'Kept quietly in your archive. You choose whether to revisit.',
+      'Everything stays on your phone.',
       'This is release, not reflection.'
     ]
   },
