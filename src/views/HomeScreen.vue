@@ -55,10 +55,12 @@ import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { playStorm } = useAudio()
+const { playStorm, syncMutedState } = useAudio()
 const { triggerHaptic } = useHaptics()
 
 onMounted(() => {
+  // Sync muted state from localStorage in case it changed
+  syncMutedState()
   // Ensure storm is playing (will be no-op if already playing)
   playStorm()
 })

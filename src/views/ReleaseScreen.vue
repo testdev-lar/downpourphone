@@ -108,7 +108,7 @@
             @click="exitApp"
             class="touch-target px-8 py-3 bg-amber-200/10 hover:bg-amber-200/20 text-amber-200/80 rounded-full transition-all duration-300 border border-amber-200/20 backdrop-blur-sm active:scale-95"
           >
-            Return to your day
+            Continue with your day
           </button>
         </div>
       </transition>
@@ -123,7 +123,7 @@ import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { fadeOutCurrent, playNature, stopAll } = useAudio()
+const { fadeOutCurrent, playNature, stopAll, syncMutedState, cancelFade } = useAudio()
 const { triggerHaptic } = useHaptics()
 
 const rainClearing = inject('rainClearing')
@@ -184,6 +184,9 @@ const skyStyle = computed(() => {
 })
 
 onMounted(() => {
+  // Sync muted state from localStorage in case it changed
+  syncMutedState()
+
   const historyState = router.options.history.state
   if (historyState) {
     text.value = historyState.text || ''
@@ -206,6 +209,9 @@ onUnmounted(() => {
   // Clear all tracked timeouts
   activeTimeouts.forEach(timeout => clearTimeout(timeout))
   activeTimeouts.length = 0
+
+  // Cancel any pending fade timeout to prevent it from stopping audio after navigation
+  cancelFade()
 })
 
 const startClearingSequence = () => {
@@ -317,17 +323,24 @@ const exitApp = () => {
     rainClearing.setPhase(0)
   }
 
-  // Try to close/exit the app (multiple fallbacks for TWA compatibility)
-  // Method 1: window.close() - works in some PWA contexts
-  window.close()
+  // TWA exit strategy:
+  // 1. Try window.close() first (works in some PWA/TWA contexts)
+  // 2. If that fails, navigate back to previous screen
+  //    The user can then use Android's back button to exit naturally
+  try {
+    window.close()
+  } catch (e) {
+    // Ignore close failures
+  }
 
-  // Method 2: Navigate back through history until app closes
-  // This works in TWA when window.close() doesn't
+  // If still here after 100ms, window.close didn't work
+  // Just go back once - user can use Android back button from there
   setTimeout(() => {
-    // If we're still here, window.close() didn't work
-    // Go back to the very beginning of history
     if (window.history.length > 1) {
-      window.history.go(-(window.history.length - 1))
+      window.history.back()
+    } else {
+      // If no history, go to home as fallback
+      router.push('/')
     }
   }, 100)
 }
