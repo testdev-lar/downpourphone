@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-01-30
 
 ## Quick Reference
 
@@ -32,7 +32,11 @@
 - PWA manifest and service worker configured
 - "Continue with your day" exit button on release screen
 
-### What's Fixed (This Session - 2026-01-29)
+### What's Fixed (This Session - 2026-01-30)
+- "Clear All Data" moved from Settings to Archive header
+- Changed from trash icon to "Clear all" text button (clearer for destructive action)
+
+### What's Fixed (Previous Session - 2026-01-29)
 - "How to use Downpour" guide added to home screen (`?` icon opens modal)
 - Onboarding copy revised to sound less AI-written (multiple iterations)
 - Full-bleed app icon implemented (fixes launcher icon not filling space on S24)
@@ -122,6 +126,7 @@
 **Archive (Puddle):**
 - Expandable entry cards
 - Individual deletion with confirmation modal + feedback message
+- "Clear all" button in header (text, not icon) with confirmation modal
 - Entry count: "1 thought released" or "X thoughts released"
 - Emotion tag display with accent colors
 - Date/time stamps
@@ -311,7 +316,8 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 - src/views/OnboardingScreen.vue (5 screens, auto-advance on emotion, revised copy)
 - src/views/ReleaseScreen.vue ("Continue with your day" button)
 - src/views/HomeScreen.vue (`?` guide icon + modal, gear icon, mountains)
-- src/views/SettingsScreen.vue (sound toggle, replay tutorial, clear data, creator link)
+- src/views/ArchiveScreen.vue (past entries, "Clear all" button, individual delete)
+- src/views/SettingsScreen.vue (sound toggle, replay tutorial, creator link)
 
 **Data:**
 - src/composables/useLocalStorage.js

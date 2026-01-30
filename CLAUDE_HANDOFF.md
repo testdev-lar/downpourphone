@@ -36,8 +36,8 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 3. **HomeScreen.vue** - Main page with "Let it fall away" button, `?` help icon (opens guide modal), Settings icon, Archive icon
 4. **WriteScreen.vue** - Textarea for writing (280 char limit), emotion tags, "Release" button
 5. **ReleaseScreen.vue** - Animated sequence: text dissolves, sky clears, "Continue with your day" button exits app
-6. **ArchiveScreen.vue** - "Puddle" - list of past entries, expandable cards
-7. **SettingsScreen.vue** - Sound toggle, replay tutorial, clear all data, "Connect with creator" link (@ascensciana on X)
+6. **ArchiveScreen.vue** - "Puddle" - list of past entries, expandable cards, "Clear all" button in header
+7. **SettingsScreen.vue** - Sound toggle, replay tutorial, "Connect with creator" link (@ascensciana on X)
 
 ---
 
@@ -104,7 +104,15 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-01-29)
+### Latest Session (2026-01-30)
+**UX Improvements: Clear All Data Relocation**
+
+1. **"Clear All Data" moved from Settings to Archive** - Now in top-right of Archive header
+   - Changed from trash icon to "Clear all" text button (clearer intent for destructive action)
+   - Same confirmation modal with "Cancel" and "Clear" buttons
+   - Navigates to home after clearing
+
+### Previous Session (2026-01-29)
 **UX Improvements: Guide, Copy, Icon, Creator Link**
 
 1. **"How to use Downpour" guide added** - `?` icon on home screen opens modal with:
@@ -283,8 +291,8 @@ src/
     ├── HomeScreen.vue       # Main app entry
     ├── WriteScreen.vue      # Writing interface
     ├── ReleaseScreen.vue    # Release sequence + exit button
-    ├── ArchiveScreen.vue    # Past entries (puddle)
-    └── SettingsScreen.vue   # Sound, tutorial, clear data
+    ├── ArchiveScreen.vue    # Past entries (puddle), clear all button
+    └── SettingsScreen.vue   # Sound, tutorial, creator link
 
 public/
 ├── audio/
