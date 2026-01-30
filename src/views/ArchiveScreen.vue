@@ -24,12 +24,9 @@
         
         <button
           @click="confirmClear"
-          class="touch-target w-12 h-12 flex items-center justify-center rounded-full hover:bg-red-500/10 transition-colors"
-          title="Clear all entries"
+          class="touch-target text-sm text-text-muted hover:text-red-400 transition-colors"
         >
-          <svg viewBox="0 0 24 24" class="w-5 h-5 text-text-muted hover:text-red-400" fill="none">
-            <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          Clear all
         </button>
       </div>
     </div>
