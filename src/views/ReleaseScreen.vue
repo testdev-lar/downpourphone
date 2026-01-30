@@ -230,9 +230,8 @@ const startClearingSequence = () => {
     // Start fading out storm (4000ms fade)
     try {
       await fadeOutCurrent(4000)
-      console.log('[Audio] Fade completed successfully')
-    } catch (err) {
-      console.error('[Audio] Fade error:', err)
+    } catch {
+      // Audio fade failed silently
     }
   }, 500)
 
