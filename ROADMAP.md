@@ -36,6 +36,7 @@
 - "Clear All Data" moved from Settings to Archive header
 - Changed from trash icon to "Clear all" text button (clearer for destructive action)
 - Removed verbose console.log debug statements from audio system (cleaner production console)
+- Privacy policy created and hosted: https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412
 
 ### What's Fixed (Previous Session - 2026-01-29)
 - "How to use Downpour" guide added to home screen (`?` icon opens modal)
@@ -296,7 +297,7 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 2. ~~TWA packaging (Bubblewrap)~~ DONE (version 6)
 3. ~~Digital asset links~~ DONE
 4. ~~Full-bleed icon~~ DONE
-5. Privacy policy hosting
+5. ~~Privacy policy~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
 6. Screenshots on S24
 7. Play Store submission
 

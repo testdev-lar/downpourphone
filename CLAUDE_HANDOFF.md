@@ -117,6 +117,11 @@ State is shared via Vue's provide/inject from `App.vue`.
    - 8 console.error statements kept (actual error reporting)
    - Cleaner browser console for production users
 
+3. **Privacy policy created and hosted**
+   - URL: https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412
+   - Developer: Ascensciana, Contact: @ascensciana on X
+   - Age requirement: 13+, No analytics, localStorage only
+
 ### Previous Session (2026-01-29)
 **UX Improvements: Guide, Copy, Icon, Creator Link**
 
@@ -270,7 +275,7 @@ All P0 items done:
 2. ~~TWA packaging with Bubblewrap~~ DONE (APK/AAB built, version 6)
 3. ~~Configure digital asset links~~ DONE (URL bar hidden)
 4. ~~Test APK on Samsung S24~~ DONE
-5. Privacy policy hosting
+5. ~~Privacy policy hosting~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
 6. Screenshots on S24
 7. Play Store listing and submission
 
