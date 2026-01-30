@@ -105,12 +105,17 @@ State is shared via Vue's provide/inject from `App.vue`.
 ## Recent Changes (Session History)
 
 ### Latest Session (2026-01-30)
-**UX Improvements: Clear All Data Relocation**
+**UX Improvements: Clear All Data Relocation + Code Cleanup**
 
 1. **"Clear All Data" moved from Settings to Archive** - Now in top-right of Archive header
    - Changed from trash icon to "Clear all" text button (clearer intent for destructive action)
    - Same confirmation modal with "Cancel" and "Clear" buttons
    - Navigates to home after clearing
+
+2. **Removed verbose console.log statements from useAudio.js**
+   - 23 debug log statements removed (chatty status updates)
+   - 8 console.error statements kept (actual error reporting)
+   - Cleaner browser console for production users
 
 ### Previous Session (2026-01-29)
 **UX Improvements: Guide, Copy, Icon, Creator Link**

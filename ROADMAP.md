@@ -35,6 +35,7 @@
 ### What's Fixed (This Session - 2026-01-30)
 - "Clear All Data" moved from Settings to Archive header
 - Changed from trash icon to "Clear all" text button (clearer for destructive action)
+- Removed verbose console.log debug statements from audio system (cleaner production console)
 
 ### What's Fixed (Previous Session - 2026-01-29)
 - "How to use Downpour" guide added to home screen (`?` icon opens modal)
