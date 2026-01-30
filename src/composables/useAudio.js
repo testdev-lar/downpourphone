@@ -103,7 +103,6 @@ export function useAudio() {
     // If context is closed or in bad state, recreate it
     if (audioContext.value &&
         (audioContext.value.state === 'closed')) {
-      console.log('[Audio] Context is closed, recreating')
       audioContext.value = null
       isReady.value = false
     }
@@ -142,11 +141,6 @@ export function useAudio() {
 
   // Stop current audio immediately
   const stopAll = () => {
-    console.log('[Audio] stopAll called', {
-      hadActiveSource: !!activeSource.value,
-      previousState: currentState.value
-    })
-
     // Stop main audio source (storm/nature)
     if (activeSource.value) {
       try {
@@ -159,7 +153,7 @@ export function useAudio() {
         activeGainNode.value?.disconnect()
         activeSource.value.disconnect()
       } catch (e) {
-        console.log('[Audio] stopAll error (may be already stopped):', e.message)
+        // May be already stopped
       }
       activeSource.value = null
       activeGainNode.value = null
@@ -178,40 +172,21 @@ export function useAudio() {
     oneShotSources.value = []
 
     currentState.value = AudioState.SILENT
-    console.log('[Audio] stopAll complete, state now SILENT')
   }
 
   // Play storm sound (only if not already playing)
   const playStorm = async () => {
-    console.log('[Audio] playStorm called', {
-      isMuted: isMuted.value,
-      currentState: currentState.value,
-      hasActiveGainNode: !!activeGainNode.value,
-      isOperationInProgress: isOperationInProgress.value
-    })
-
-    if (isMuted.value) {
-      console.log('[Audio] playStorm: Muted, skipping')
-      return
-    }
-    if (currentState.value === AudioState.STORM) {
-      console.log('[Audio] playStorm: Already playing storm')
-      return // Already playing
-    }
-    if (isOperationInProgress.value) {
-      console.log('[Audio] playStorm: Operation in progress, skipping')
-      return
-    }
+    if (isMuted.value) return
+    if (currentState.value === AudioState.STORM) return // Already playing
+    if (isOperationInProgress.value) return
 
     isOperationInProgress.value = true
 
     try {
       // Set state IMMEDIATELY to prevent race condition
       currentState.value = AudioState.STORM
-      console.log('[Audio] playStorm: State set to STORM immediately')
 
       if (!(await ensureAudioReady())) {
-        console.log('[Audio] playStorm: Audio not ready')
         currentState.value = AudioState.SILENT // Reset on failure
         return
       }
@@ -221,7 +196,6 @@ export function useAudio() {
 
       const audioBuffer = await loadAudioBuffer('storm')
       if (!audioBuffer) {
-        console.log('[Audio] playStorm: Failed to load storm buffer')
         currentState.value = AudioState.SILENT // Reset on failure
         return
       }
@@ -241,11 +215,6 @@ export function useAudio() {
       currentState.value = AudioState.STORM // Set state after stopAll cleared it
 
       source.start()
-
-      console.log('[Audio] playStorm: Storm started successfully', {
-        hasActiveGainNode: !!activeGainNode.value,
-        currentState: currentState.value
-      })
     } catch (e) {
       console.error('Error playing storm:', e)
       currentState.value = AudioState.SILENT // Reset on error
@@ -259,16 +228,9 @@ export function useAudio() {
   const fadeOutCurrent = (duration = 4000) => {
     return new Promise((resolve) => {
       if (!activeGainNode.value || !audioContext.value || currentState.value === AudioState.SILENT) {
-        console.log('[Audio] fadeOutCurrent: No active audio to fade')
         resolve()
         return
       }
-
-      console.log('[Audio] fadeOutCurrent: Starting fade with linearRamp', {
-        duration,
-        currentState: currentState.value,
-        startVolume: activeGainNode.value.gain.value
-      })
 
       const gainNode = activeGainNode.value
       const now = audioContext.value.currentTime
@@ -278,8 +240,6 @@ export function useAudio() {
       gainNode.gain.setValueAtTime(gainNode.gain.value, now)
       gainNode.gain.linearRampToValueAtTime(0, now + durationInSeconds)
 
-      console.log('[Audio] fadeOutCurrent: Scheduled linearRamp from', gainNode.gain.value, 'to 0 over', durationInSeconds, 'seconds')
-
       // Clear any previous fade timeout
       if (fadeOutTimeoutId.value) {
         clearTimeout(fadeOutTimeoutId.value)
@@ -288,7 +248,6 @@ export function useAudio() {
       // Wait for fade to complete, then stop all audio
       fadeOutTimeoutId.value = setTimeout(() => {
         fadeOutTimeoutId.value = null
-        console.log('[Audio] Fade complete, stopping all audio')
         stopAll()
         resolve()
       }, duration + 100) // Small buffer to ensure fade completes
@@ -297,25 +256,15 @@ export function useAudio() {
 
   // Play nature sounds (with fade in)
   const playNature = async (duration = 2000) => {
-    console.log('[Audio] playNature called', {
-      isMuted: isMuted.value,
-      currentState: currentState.value,
-      isOperationInProgress: isOperationInProgress.value
-    })
-
     if (isMuted.value) return
     if (currentState.value === AudioState.NATURE) return // Already playing
-    if (isOperationInProgress.value) {
-      console.log('[Audio] playNature: Operation in progress, skipping')
-      return
-    }
+    if (isOperationInProgress.value) return
 
     isOperationInProgress.value = true
 
     try {
       // Set state IMMEDIATELY to prevent race condition
       currentState.value = AudioState.NATURE
-      console.log('[Audio] playNature: State set to NATURE immediately')
 
       if (!(await ensureAudioReady())) {
         currentState.value = AudioState.SILENT // Reset on failure
@@ -347,8 +296,6 @@ export function useAudio() {
 
       source.start()
 
-      console.log('[Audio] playNature: Nature started, fading in with linearRamp')
-
       // Fade in using Web Audio API's native scheduling
       const targetVolume = 0.4
       const now = audioContext.value.currentTime
@@ -356,8 +303,6 @@ export function useAudio() {
 
       gainNode.gain.setValueAtTime(0, now)
       gainNode.gain.linearRampToValueAtTime(targetVolume, now + durationInSeconds)
-
-      console.log('[Audio] playNature: Scheduled linearRamp from 0 to', targetVolume, 'over', durationInSeconds, 'seconds')
     } catch (e) {
       console.error('Error playing nature:', e)
       currentState.value = AudioState.SILENT // Reset on error
@@ -414,7 +359,6 @@ export function useAudio() {
   const syncMutedState = () => {
     const stored = loadMutedState()
     if (isMuted.value !== stored) {
-      console.log('[Audio] syncMutedState: Syncing from localStorage', { old: isMuted.value, new: stored })
       isMuted.value = stored
       // If now muted, stop any playing audio
       if (isMuted.value) {
@@ -430,8 +374,6 @@ export function useAudio() {
     // Save to localStorage immediately
     const settings = { soundEnabled: !isMuted.value }
     localStorage.setItem('downpour_settings', JSON.stringify(settings))
-
-    console.log('[Audio] toggleMute:', { isMuted: isMuted.value, soundEnabled: !isMuted.value })
 
     if (isMuted.value) {
       stopAll()
