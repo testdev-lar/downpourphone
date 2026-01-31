@@ -8,12 +8,14 @@
 |------|-------|
 | **Project** | Downpour - Emotional Release Journaling PWA |
 | **Target** | Google Play Store deployment |
-| **Branch** | optimistic-bardeen (main development) |
+| **Branch** | main |
 | **Tech Stack** | Vue 3 + Vite + Tailwind + Web Audio API |
 | **Data Storage** | localStorage (no backend) |
 | **Testing Device** | Samsung S24 |
-| **Live URL** | downpour2.netlify.app |
-| **TWA Version** | 6 |
+| **Live URL** | downpour2.netlify.app (down until Feb 9 - Netlify credits) |
+| **TWA Version** | 6 (will need rebuild after freemium) |
+| **Pricing** | $6.99 USD lifetime after 7 free uses |
+| **Creator Brand** | Ascensciana - "Beautiful, digitalized rituals" |
 
 ---
 
@@ -71,8 +73,25 @@
 4. ~~TWA packaging with Bubblewrap (P1)~~ DONE - version 6
 5. ~~Digital asset links configured (P1)~~ DONE
 6. ~~Full-bleed icon implemented (P1)~~ DONE
-7. **Play Store assets (P1) ← CURRENT** (screenshots, feature graphic, privacy policy)
-8. Play Store submission (P1)
+7. ~~Privacy policy (P1)~~ DONE
+
+**Current Phase: Pre-Launch Prep (until Feb 9)**
+
+8. **Finalize Play Store listing copy** ← CAN DO NOW
+9. **Create Downpour landing page (Carrd)** ← CAN DO NOW
+10. **Create Ascensciana landing page (Carrd)** ← CAN DO NOW
+11. **Set up @ascensciana on X** ← CAN DO NOW
+12. **Draft launch tweet thread** ← CAN DO NOW
+
+**After Feb 9 (Netlify back online):**
+
+13. Implement freemium paywall (7 uses → $6.99)
+14. Integrate Google Play Billing
+15. Rebuild and test APK
+16. Take screenshots on S24
+17. Play Store submission
+
+**Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
 
 ---
 
@@ -103,6 +122,102 @@
 - `app-release-signed.apk` - For testing
 - `app-release-bundle.aab` - For Play Store submission
 - `android.keystore` - Signing key (KEEP SAFE!)
+
+---
+
+## Freemium Model (To Implement)
+
+### Pricing Strategy
+- **7 free releases** - enough to experience the full ritual multiple times
+- **$6.99 USD one-time** - lifetime unlock via Google Play Billing
+- No subscriptions, no recurring charges
+
+### Paywall UX (Recommended Approach)
+**Screen appears when user hits 7 uses:**
+
+> **"You've found something that helps."**
+>
+> You've released 7 storms. That means Downpour is working for you.
+>
+> Unlock unlimited releases for just $6.99 — yours forever.
+>
+> **[Unlock Downpour - $6.99]**
+>
+> *One-time purchase. No subscriptions. No recurring charges.*
+
+**Blocked:** Writing new entries, release ritual
+**Still accessible:** Archive, Settings
+
+### Implementation
+| File | Change |
+|------|--------|
+| `src/composables/useLocalStorage.js` | Add usage counter to localStorage |
+| `src/views/WriteScreen.vue` | Check counter, redirect to paywall if >= 7 |
+| `src/views/PaywallScreen.vue` | NEW - paywall UI |
+| `src/router.js` | Add `/paywall` route |
+
+---
+
+## Marketing Plan
+
+### Brand Identity
+- **Creator:** Ascensciana
+- **Tagline:** "Beautiful, digitalized rituals."
+- **Voice:** Warm & supportive, minimal & calm
+- **Avoid:** Therapy-speak, tech jargon
+- **Embrace:** Weather metaphors, human/conversational tone
+
+### Play Store Listing
+
+**App Name:** Downpour: Let It Go
+
+**Short Description (80 chars):**
+> Write what weighs you down. Watch it dissolve. Find closure.
+
+**Full Description:** (See CLAUDE_HANDOFF.md for full copy)
+
+**Keywords:** journaling app, anxiety relief, emotional release, mental wellness, stress relief, private journal, mood tracker, mindfulness, calm app, let it go
+
+### Screenshot Copy (5 Screenshots)
+1. "Let it out." (Title screen)
+2. "Pour out what's heavy." (Write screen)
+3. "Watch it dissolve." (Release animation)
+4. "The storm clears." (Peaceful state)
+5. "Your private archive." (Archive screen)
+
+### Landing Pages
+
+**Downpour Page (Carrd.co free tier):**
+- Hero: "Some thoughts are too heavy to carry."
+- Sections: The Ritual (Write → Release → Breathe), Why Downpour, App Preview
+- Footer: Download button, link to Ascensciana, Privacy Policy
+
+**Ascensciana Page (Carrd.co):**
+- Hero: "Beautiful, digitalized rituals."
+- Projects section (Downpour first)
+- About section (brief personal intro)
+- Connect: @ascensciana on X
+
+### Launch Strategy (Low/No Budget)
+
+**Pre-Launch (Now - Feb 9):**
+- Set up @ascensciana X account
+- Create both landing pages
+- Draft launch tweet thread (5-7 tweets)
+- Join communities: r/androidapps, r/journaling, r/anxiety
+- Prepare Product Hunt listing
+
+**Launch Week:**
+- Post and pin launch thread on X
+- Submit to Product Hunt
+- Post in Reddit communities (genuine, value-first)
+- Personal IG story (350 followers)
+- Reply to all reviews
+
+**Ongoing:**
+- Share user testimonials when received
+- Occasional behind-the-scenes posts
+- Email indie app blogs for coverage
 
 ---
 
@@ -286,20 +401,25 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 
 ## Priority Levels
 
-**P0 - Blocking:**
+**P0 - Blocking:** ALL DONE
 1. ~~Fix audio bugs~~ DONE
 2. ~~Add "Continue with the day" exit button~~ DONE
 3. ~~Update settings icon~~ DONE
-4. ~~Test on S24~~ DONE (basic testing complete)
+4. ~~Test on S24~~ DONE
 
-**P1 - Launch:**
+**P1 - Launch (Current):**
 1. ~~Deploy PWA to public URL~~ DONE (downpour2.netlify.app)
 2. ~~TWA packaging (Bubblewrap)~~ DONE (version 6)
 3. ~~Digital asset links~~ DONE
 4. ~~Full-bleed icon~~ DONE
-5. ~~Privacy policy~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
-6. Screenshots on S24
-7. Play Store submission
+5. ~~Privacy policy~~ DONE
+6. Play Store listing copy ← READY (see Marketing Plan above)
+7. Landing pages (Downpour + Ascensciana)
+8. Freemium paywall implementation
+9. Google Play Billing integration
+10. Rebuild APK
+11. Screenshots on S24
+12. Play Store submission
 
 **P2 - Post-Launch:**
 - Export functionality

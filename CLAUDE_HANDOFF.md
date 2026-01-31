@@ -4,7 +4,9 @@
 
 Downpour is a **minimalist emotional release journaling PWA** (Progressive Web App). The concept: users write what's weighing on them, then "release" it - watching their words dissolve while the stormy sky clears to sunshine, accompanied by a soundscape transition from heavy rain to peaceful nature sounds.
 
-**Target:** Google Play Store release as a PWA.
+**Target:** Google Play Store release as a TWA (Trusted Web Activity).
+**Pricing:** $6.99 USD lifetime unlock after 7 free uses.
+**Creator Brand:** Ascensciana - "Beautiful, digitalized rituals"
 
 ---
 
@@ -276,8 +278,128 @@ All P0 items done:
 3. ~~Configure digital asset links~~ DONE (URL bar hidden)
 4. ~~Test APK on Samsung S24~~ DONE
 5. ~~Privacy policy hosting~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
-6. Screenshots on S24
-7. Play Store listing and submission
+6. Implement freemium paywall (7 free uses, then $6.99 unlock)
+7. Rebuild APK after freemium implementation
+8. Screenshots on S24
+9. Play Store listing and submission
+
+**Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
+
+---
+
+## Freemium Model (To Implement)
+
+### Pricing
+- **7 free releases** then paywall
+- **$6.99 USD one-time** lifetime unlock (Google Play Billing)
+
+### Paywall UX
+When user hits 7 uses, show screen:
+
+> **"You've found something that helps."**
+>
+> You've released 7 storms. That means Downpour is working for you.
+>
+> Unlock unlimited releases for just $6.99 — yours forever.
+>
+> **[Unlock Downpour - $6.99]**
+>
+> *One-time purchase. No subscriptions. No recurring charges.*
+
+**What's blocked:** Writing new entries, release ritual
+**What's still accessible:** Archive (browse past releases), Settings
+
+### Files to Modify
+| File | Change |
+|------|--------|
+| `src/composables/useLocalStorage.js` | Add usage counter |
+| `src/views/WriteScreen.vue` | Check counter, redirect to paywall |
+| `src/views/PaywallScreen.vue` | NEW - create paywall UI |
+| `src/router.js` | Add paywall route |
+
+---
+
+## Marketing Plan
+
+### Brand Voice
+- Warm & supportive + Minimal & calm
+- Weather metaphors encouraged
+- Avoid therapy-speak ("self-care journey", "mental wellness toolkit")
+- Avoid tech jargon ("PWA", "cloud-free", "encrypted locally")
+- Keep it human and conversational
+
+### Play Store Listing
+
+**App Name:** Downpour: Let It Go (or just "Downpour")
+
+**Short Description (80 chars):**
+> Write what weighs you down. Watch it dissolve. Find closure.
+
+**Full Description:**
+```
+Some thoughts are too heavy to carry.
+
+Downpour is a simple ritual for letting go. Write what's weighing you down — anxiety, frustration, overwhelm, whatever's storming in your mind. Then release it. Watch your words dissolve into rain. Feel the storm clear.
+
+No journals to maintain. No streaks to keep. No stats to analyze. Just write, release, and move on with your day.
+
+HOW IT WORKS
+• Write what's on your mind (up to 280 characters)
+• Tag your emotion — anxious, overwhelmed, frustrated, sad, lonely, exhausted, angry, restless
+• Press release and watch your words wash away
+• The storm clears. Birds sing. You breathe.
+
+YOUR PRIVATE STORM
+Everything stays on your device. No accounts. No cloud. No one reads your words but you. They exist only long enough to be released.
+
+DESIGNED FOR CLOSURE
+Most journaling apps want you to reflect, revisit, analyze. Downpour is different. This is about letting go, not holding on. Write it. Release it. It's done.
+
+THE RITUAL
+Rain falls. Thunder rumbles. You pour out your thoughts. Then — silence. The storm passes. Peaceful sounds emerge. The ritual is complete.
+
+---
+
+Try 7 releases free. If it helps, unlock unlimited releases for $6.99 (one-time, lifetime access).
+
+Made with care by Ascensciana.
+```
+
+**Keywords:** journaling app, anxiety relief, emotional release, mental wellness, stress relief, private journal, mood tracker, mindfulness, calm app, let it go
+
+### Screenshot Copy (5 Screenshots)
+1. **"Let it out."** - Title screen with rain
+2. **"Pour out what's heavy."** - Write screen with emotion tags
+3. **"Watch it dissolve."** - Release animation mid-flow
+4. **"The storm clears."** - Cleared sky, peaceful state
+5. **"Your private archive."** - Archive screen
+
+### Landing Pages (To Create)
+
+**Downpour Landing Page** (Carrd.co free tier)
+- Hero: "Some thoughts are too heavy to carry."
+- The Ritual: Write → Release → Breathe
+- Why Downpour: No pressure, Truly private, Designed for closure
+- App preview screenshots
+- Download button + link to Ascensciana
+
+**Ascensciana Landing Page** (Carrd.co)
+- "Beautiful, digitalized rituals."
+- Projects: Downpour (first app)
+- About: Brief personal intro
+- Connect: @ascensciana on X
+
+### Pre-Launch Marketing (Free)
+- Set up @ascensciana on X
+- Draft launch tweet thread (5-7 tweets)
+- Join communities: r/androidapps, r/journaling, r/anxiety
+- Prepare Product Hunt listing
+
+### Launch Week
+- Post launch thread on X
+- Submit to Product Hunt
+- Post in Reddit communities (genuine, not spammy)
+- Personal IG story
 
 ---
 
@@ -340,7 +462,7 @@ npm run preview  # Preview production build
 
 https://github.com/testdev-lar/downpourphone
 
-**Branch:** optimistic-bardeen (main development)
+**Branch:** main
 
 ---
 
@@ -355,7 +477,7 @@ https://github.com/testdev-lar/downpourphone
 - The haptic system is a **composable** - import and use `triggerHaptic(type)` for feedback
 - Writing prompts rotate **after each release** - 10 variations stored in sessionStorage
 - Entry deletion uses **`deleteEntry(id)`** from useLocalStorage.js
-- Main development branch is **`optimistic-bardeen`**
+- Main development branch is **`main`**
 - Working directory is **`C:\Users\bayle\Desktop\Downpour Round 2 - Claude Code`**
 - Target deployment: **Google Play Store** via TWA (Trusted Web Activity)
 - Testing device: **Samsung S24**
