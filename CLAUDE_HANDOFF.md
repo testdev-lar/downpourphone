@@ -52,7 +52,8 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 | `src/composables/useAudio.js` | State machine audio (STORM/NATURE), singleton pattern |
 | `src/composables/useHaptics.js` | Haptic feedback system - light (10ms), medium (20ms), heavy (30ms) |
 | `src/composables/useLocalStorage.js` | Entry storage + usage tracking for freemium paywall |
-| `src/views/PaywallScreen.vue` | **NEW** - Freemium paywall UI |
+| `src/composables/useBilling.js` | **NEW** - Google Play Billing via Digital Goods API |
+| `src/views/PaywallScreen.vue` | Freemium paywall UI with purchase + restore flows |
 | `src/router.js` | Vue Router configuration (includes /paywall route) |
 | `src/views/*.vue` | All screen components |
 | `public/audio/` | Audio files: storm-heavy.mp3, thunder-rumble.mp3, nature-peaceful.mp3 |
@@ -110,28 +111,26 @@ State is shared via Vue's provide/inject from `App.vue`.
 ## Recent Changes (Session History)
 
 ### Latest Session (2026-02-02)
-**Freemium Paywall Implementation**
+**Freemium Paywall + Google Play Billing Integration**
 
 1. **Usage tracking added to useLocalStorage.js**
    - New localStorage keys: `downpour_usage_count`, `downpour_unlocked`
-   - `getUsageCount()` - returns current usage count
-   - `incrementUsageCount()` - called after each release
-   - `hasReachedLimit` - computed, true if count >= 7 and not unlocked
-   - `isUnlocked` - computed, checks unlock status
-   - `setUnlocked()` - marks app as unlocked (for billing callback)
+   - `getUsageCount()`, `incrementUsageCount()`, `hasReachedLimit`, `isUnlocked`, `setUnlocked()`
 
 2. **PaywallScreen.vue created**
    - Warm copy: "You've found something that helps."
-   - Unlock button (placeholder for Google Play Billing)
-   - "Browse your archive" and "Back to home" navigation
-   - Mountain silhouettes, matches app aesthetic
+   - Purchase + restore purchase flows
+   - Error handling and loading states
 
 3. **Paywall checks added**
-   - HomeScreen.vue: "Let it fall away" redirects to paywall if limit reached
-   - WriteScreen.vue: Redirects on mount and on release attempt if limit reached
+   - HomeScreen.vue + WriteScreen.vue redirect to paywall if limit reached
 
-4. **Router updated**
-   - Added `/paywall` route
+4. **Google Play Billing integrated (useBilling.js)**
+   - Uses Digital Goods API for TWA billing
+   - Product ID: `downpour_unlimited`
+   - `purchase()` - initiates purchase via Payment Request API
+   - `restorePurchases()` - checks for existing purchases
+   - Handles non-TWA gracefully (shows "only available in app" message)
 
 5. **Workflow documentation created**
    - CLAUDE.md - workflow orchestration rules
@@ -309,11 +308,12 @@ All P0 items done:
 3. ~~Configure digital asset links~~ DONE (URL bar hidden)
 4. ~~Test APK on Samsung S24~~ DONE
 5. ~~Privacy policy hosting~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
-6. ~~Implement freemium paywall~~ DONE (UI complete, billing placeholder)
-7. Integrate Google Play Billing
-8. Rebuild APK after billing implementation
-9. Screenshots on S24
-10. Play Store listing and submission
+6. ~~Implement freemium paywall~~ DONE
+7. ~~Integrate Google Play Billing~~ DONE (code complete)
+8. Set up product in Play Console
+9. Rebuild APK with billing
+10. Screenshots on S24
+11. Play Store listing and submission
 
 **Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
 
@@ -341,19 +341,21 @@ When user hits 7 uses, PaywallScreen shows:
 **What's blocked:** Writing new entries, release ritual
 **What's still accessible:** Archive (browse past releases), Settings
 
-### Implementation Status
+### Implementation Status (ALL CODE COMPLETE)
 | File | Status |
 |------|--------|
 | `src/composables/useLocalStorage.js` | DONE - usage counter + unlock tracking |
+| `src/composables/useBilling.js` | DONE - Digital Goods API integration |
 | `src/views/WriteScreen.vue` | DONE - redirects to paywall |
 | `src/views/HomeScreen.vue` | DONE - redirects to paywall |
-| `src/views/PaywallScreen.vue` | DONE - paywall UI (placeholder unlock button) |
+| `src/views/PaywallScreen.vue` | DONE - purchase + restore flows |
 | `src/router.js` | DONE - /paywall route added |
 
-### Remaining: Google Play Billing
-- `setUnlocked()` ready to call after successful purchase
-- Need to integrate Play Billing Library
-- Need to set up Product ID in Play Console
+### Google Play Billing
+**Product ID:** `downpour_unlimited`
+**API:** Digital Goods API (for TWA)
+
+**Remaining:** Set up product in Play Console + test on device
 
 ---
 

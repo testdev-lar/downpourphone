@@ -22,11 +22,19 @@
           Unlock unlimited releases for just $6.99 — yours forever.
         </p>
 
+        <!-- Error message -->
+        <p v-if="errorMessage" class="text-red-400 text-sm mb-4">
+          {{ errorMessage }}
+        </p>
+
+        <!-- Main unlock button -->
         <button
           @click="handleUnlock"
-          class="touch-target w-full py-4 bg-accent-light/20 hover:bg-accent-light/30 rounded-xl border border-accent-light/50 text-accent-light text-lg font-medium transition-all active:scale-95 mb-4"
+          :disabled="isPurchasing"
+          class="touch-target w-full py-4 bg-accent-light/20 hover:bg-accent-light/30 disabled:bg-bg-secondary/30 disabled:border-border disabled:text-text-muted/50 rounded-xl border border-accent-light/50 text-accent-light text-lg font-medium transition-all active:scale-95 disabled:active:scale-100 mb-4"
         >
-          Unlock Downpour — $6.99
+          <span v-if="isPurchasing">Processing...</span>
+          <span v-else>Unlock Downpour — $6.99</span>
         </button>
 
         <p class="text-text-muted text-sm mb-8">
@@ -34,6 +42,17 @@
         </p>
 
         <div class="flex flex-col gap-3">
+          <!-- Restore purchase option -->
+          <button
+            v-if="billingAvailable"
+            @click="handleRestore"
+            :disabled="isRestoring"
+            class="touch-target py-3 text-text-muted hover:text-text-primary transition-colors"
+          >
+            <span v-if="isRestoring">Restoring...</span>
+            <span v-else>Restore purchase</span>
+          </button>
+
           <button
             @click="goToArchive"
             class="touch-target py-3 text-text-muted hover:text-text-primary transition-colors"
@@ -54,28 +73,74 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
-import { useLocalStorage } from '../composables/useLocalStorage'
+import { useBilling } from '../composables/useBilling'
 
 const router = useRouter()
 const { playStorm, syncMutedState } = useAudio()
 const { triggerHaptic } = useHaptics()
-const { setUnlocked } = useLocalStorage()
+const {
+  isPurchasing,
+  error,
+  initialize,
+  purchase,
+  restorePurchases,
+  checkAvailability
+} = useBilling()
 
-onMounted(() => {
+const billingAvailable = ref(false)
+const isRestoring = ref(false)
+const errorMessage = ref('')
+
+onMounted(async () => {
   syncMutedState()
   playStorm()
+
+  // Check if billing is available (only in TWA)
+  billingAvailable.value = await checkAvailability()
 })
 
-const handleUnlock = () => {
+const handleUnlock = async () => {
   triggerHaptic('heavy')
-  // TODO: Integrate Google Play Billing
-  // For now, this is a placeholder that will call setUnlocked() after successful purchase
-  // setUnlocked()
-  // router.push('/home')
+  errorMessage.value = ''
+
+  // If billing is available, use it
+  if (billingAvailable.value) {
+    const result = await purchase()
+
+    if (result.success) {
+      triggerHaptic('heavy')
+      router.push('/home')
+    } else if (result.cancelled) {
+      // User cancelled, do nothing
+    } else if (result.error) {
+      errorMessage.value = error.value || 'Purchase failed. Please try again.'
+    }
+  } else {
+    // Not in TWA - show message (dev mode)
+    errorMessage.value = 'Purchases only available in the app from Google Play'
+  }
+}
+
+const handleRestore = async () => {
+  triggerHaptic('medium')
+  isRestoring.value = true
+  errorMessage.value = ''
+
+  const result = await restorePurchases()
+  isRestoring.value = false
+
+  if (result.restored) {
+    triggerHaptic('heavy')
+    router.push('/home')
+  } else if (result.success && !result.restored) {
+    errorMessage.value = 'No previous purchase found'
+  } else if (result.error) {
+    errorMessage.value = error.value || 'Could not restore purchases'
+  }
 }
 
 const goToArchive = () => {

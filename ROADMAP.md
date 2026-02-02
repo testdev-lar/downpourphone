@@ -86,10 +86,11 @@
 
 **After Feb 9 (Netlify back online):**
 
-14. Integrate Google Play Billing
-15. Rebuild and test APK
-16. Take screenshots on S24
-17. Play Store submission
+14. ~~Integrate Google Play Billing~~ DONE (code complete)
+15. Set up product in Play Console
+16. Rebuild and test APK
+17. Take screenshots on S24
+18. Play Store submission
 
 **Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
 
@@ -157,10 +158,15 @@
 | `src/views/PaywallScreen.vue` | Paywall UI with placeholder unlock button | DONE |
 | `src/router.js` | Added `/paywall` route | DONE |
 
-### Remaining: Google Play Billing Integration
-- `setUnlocked()` function ready to call after successful purchase
-- Need to integrate Google Play Billing Library
-- Need to set up Product ID in Play Console
+### Google Play Billing (CODE COMPLETE)
+| File | Status |
+|------|--------|
+| `src/composables/useBilling.js` | DONE - Digital Goods API integration |
+| `src/views/PaywallScreen.vue` | DONE - Purchase + restore flows |
+
+**Product ID:** `downpour_unlimited`
+
+**Remaining:** Set up product in Play Console + test on device
 
 ---
 
