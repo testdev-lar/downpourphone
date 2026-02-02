@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-02
 
 ## Quick Reference
 
@@ -74,18 +74,18 @@
 5. ~~Digital asset links configured (P1)~~ DONE
 6. ~~Full-bleed icon implemented (P1)~~ DONE
 7. ~~Privacy policy (P1)~~ DONE
+8. ~~Implement freemium paywall (P1)~~ DONE - 7 uses then paywall
 
 **Current Phase: Pre-Launch Prep (until Feb 9)**
 
-8. **Finalize Play Store listing copy** ← CAN DO NOW
-9. **Create Downpour landing page (Carrd)** ← CAN DO NOW
-10. **Create Ascensciana landing page (Carrd)** ← CAN DO NOW
-11. **Set up @ascensciana on X** ← CAN DO NOW
-12. **Draft launch tweet thread** ← CAN DO NOW
+9. **Finalize Play Store listing copy** ← CAN DO NOW
+10. **Create Downpour landing page (Carrd)** ← CAN DO NOW
+11. **Create Ascensciana landing page (Carrd)** ← CAN DO NOW
+12. **Set up @ascensciana on X** ← CAN DO NOW
+13. **Draft launch tweet thread** ← CAN DO NOW
 
 **After Feb 9 (Netlify back online):**
 
-13. Implement freemium paywall (7 uses → $6.99)
 14. Integrate Google Play Billing
 15. Rebuild and test APK
 16. Take screenshots on S24
@@ -125,14 +125,14 @@
 
 ---
 
-## Freemium Model (To Implement)
+## Freemium Model (IMPLEMENTED)
 
 ### Pricing Strategy
 - **7 free releases** - enough to experience the full ritual multiple times
 - **$6.99 USD one-time** - lifetime unlock via Google Play Billing
-- No subscriptions, no recurring charges
+- No subscriptions
 
-### Paywall UX (Recommended Approach)
+### Paywall UX (Implemented)
 **Screen appears when user hits 7 uses:**
 
 > **"You've found something that helps."**
@@ -143,18 +143,24 @@
 >
 > **[Unlock Downpour - $6.99]**
 >
-> *One-time purchase. No subscriptions. No recurring charges.*
+> *One-time purchase. No subscriptions.*
 
 **Blocked:** Writing new entries, release ritual
 **Still accessible:** Archive, Settings
 
-### Implementation
-| File | Change |
-|------|--------|
-| `src/composables/useLocalStorage.js` | Add usage counter to localStorage |
-| `src/views/WriteScreen.vue` | Check counter, redirect to paywall if >= 7 |
-| `src/views/PaywallScreen.vue` | NEW - paywall UI |
-| `src/router.js` | Add `/paywall` route |
+### Implementation (DONE)
+| File | Change | Status |
+|------|--------|--------|
+| `src/composables/useLocalStorage.js` | Added usage counter + unlock tracking | DONE |
+| `src/views/WriteScreen.vue` | Redirects to paywall if limit reached | DONE |
+| `src/views/HomeScreen.vue` | Redirects to paywall if limit reached | DONE |
+| `src/views/PaywallScreen.vue` | Paywall UI with placeholder unlock button | DONE |
+| `src/router.js` | Added `/paywall` route | DONE |
+
+### Remaining: Google Play Billing Integration
+- `setUnlocked()` function ready to call after successful purchase
+- Need to integrate Google Play Billing Library
+- Need to set up Product ID in Play Console
 
 ---
 
@@ -413,9 +419,9 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 3. ~~Digital asset links~~ DONE
 4. ~~Full-bleed icon~~ DONE
 5. ~~Privacy policy~~ DONE
-6. Play Store listing copy ← READY (see Marketing Plan above)
-7. Landing pages (Downpour + Ascensciana)
-8. Freemium paywall implementation
+6. ~~Freemium paywall implementation~~ DONE (UI complete, billing placeholder)
+7. Play Store listing copy ← READY (see Marketing Plan above)
+8. Landing pages (Downpour + Ascensciana)
 9. Google Play Billing integration
 10. Rebuild APK
 11. Screenshots on S24
@@ -437,7 +443,9 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 - src/views/TitleScreen.vue (playStorm on mount, mountains)
 - src/views/OnboardingScreen.vue (5 screens, auto-advance on emotion, revised copy)
 - src/views/ReleaseScreen.vue ("Continue with your day" button)
-- src/views/HomeScreen.vue (`?` guide icon + modal, gear icon, mountains)
+- src/views/HomeScreen.vue (`?` guide icon + modal, gear icon, mountains, paywall check)
+- src/views/WriteScreen.vue (paywall check on mount and release)
+- src/views/PaywallScreen.vue (freemium paywall UI, placeholder unlock button)
 - src/views/ArchiveScreen.vue (past entries, "Clear all" button, individual delete)
 - src/views/SettingsScreen.vue (sound toggle, replay tutorial, creator link)
 

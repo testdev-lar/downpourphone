@@ -27,6 +27,11 @@ const routes = [
     component: () => import('./views/ReleaseScreen.vue')
   },
   {
+    path: '/paywall',
+    name: 'paywall',
+    component: () => import('./views/PaywallScreen.vue')
+  },
+  {
     path: '/archive',
     name: 'archive',
     component: () => import('./views/ArchiveScreen.vue')

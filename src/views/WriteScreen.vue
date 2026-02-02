@@ -89,7 +89,7 @@ import { useLocalStorage } from '../composables/useLocalStorage'
 import { useHaptics } from '../composables/useHaptics'
 
 const router = useRouter()
-const { saveEntry } = useLocalStorage()
+const { saveEntry, hasReachedLimit } = useLocalStorage()
 const { triggerHaptic } = useHaptics()
 
 const charLimit = 280
@@ -138,6 +138,11 @@ const getSessionPrompt = () => {
 }
 
 onMounted(() => {
+  // Redirect to paywall if limit reached
+  if (hasReachedLimit.value) {
+    router.replace('/paywall')
+    return
+  }
   currentPrompt.value = getSessionPrompt()
 })
 
@@ -163,6 +168,12 @@ const toggleEmotion = (emotion) => {
 
 const handleRelease = () => {
   if (!text.value.trim()) return
+
+  // Safety check for paywall limit
+  if (hasReachedLimit.value) {
+    router.push('/paywall')
+    return
+  }
 
   triggerHaptic('medium')
 

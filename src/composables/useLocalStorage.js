@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 const STORAGE_KEY = 'downpour_entries'
 const ONBOARDING_KEY = 'downpour_onboarding_complete'
 const SETTINGS_KEY = 'downpour_settings'
+const USAGE_KEY = 'downpour_usage_count'
+const UNLOCKED_KEY = 'downpour_unlocked'
+const FREE_LIMIT = 7
 
 export function useLocalStorage() {
   const entries = ref([])
@@ -27,6 +30,7 @@ export function useLocalStorage() {
     }
     entries.value.unshift(newEntry)
     persistEntries()
+    incrementUsageCount()
     return newEntry
   }
 
@@ -78,6 +82,29 @@ export function useLocalStorage() {
     }
   }
 
+  // Usage tracking for freemium paywall
+  const getUsageCount = () => {
+    return parseInt(localStorage.getItem(USAGE_KEY) || '0', 10)
+  }
+
+  const incrementUsageCount = () => {
+    const count = getUsageCount() + 1
+    localStorage.setItem(USAGE_KEY, count.toString())
+    return count
+  }
+
+  const isUnlocked = computed(() => {
+    return localStorage.getItem(UNLOCKED_KEY) === 'true'
+  })
+
+  const hasReachedLimit = computed(() => {
+    return getUsageCount() >= FREE_LIMIT && !isUnlocked.value
+  })
+
+  const setUnlocked = () => {
+    localStorage.setItem(UNLOCKED_KEY, 'true')
+  }
+
   const getEntriesSortedByDate = computed(() => {
     return [...entries.value].sort((a, b) => 
       new Date(b.timestamp) - new Date(a.timestamp)
@@ -95,6 +122,10 @@ export function useLocalStorage() {
     hasCompletedOnboarding,
     setOnboardingComplete,
     getSettings,
-    saveSettings
+    saveSettings,
+    getUsageCount,
+    hasReachedLimit,
+    isUnlocked,
+    setUnlocked
   }
 }

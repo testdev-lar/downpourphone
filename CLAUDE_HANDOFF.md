@@ -49,13 +49,16 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 |------|---------|
 | `src/App.vue` | Root component, provides rain clearing state, handles lightning→thunder |
 | `src/components/BackgroundRain.vue` | Canvas-based rain animation, lightning flashes, 4 clearing phases |
-| `src/composables/useAudio.js` | **REWRITTEN** - State machine audio (STORM/NATURE), singleton pattern |
+| `src/composables/useAudio.js` | State machine audio (STORM/NATURE), singleton pattern |
 | `src/composables/useHaptics.js` | Haptic feedback system - light (10ms), medium (20ms), heavy (30ms) |
-| `src/composables/useLocalStorage.js` | Entry storage - save, load, deleteEntry(id), clear |
-| `src/router.js` | Vue Router configuration |
+| `src/composables/useLocalStorage.js` | Entry storage + usage tracking for freemium paywall |
+| `src/views/PaywallScreen.vue` | **NEW** - Freemium paywall UI |
+| `src/router.js` | Vue Router configuration (includes /paywall route) |
 | `src/views/*.vue` | All screen components |
 | `public/audio/` | Audio files: storm-heavy.mp3, thunder-rumble.mp3, nature-peaceful.mp3 |
 | `vite.config.js` | PWA manifest, service worker, workbox config |
+| `CLAUDE.md` | **NEW** - Workflow orchestration rules for Claude |
+| `tasks/lessons.md` | **NEW** - Pattern tracking for self-improvement |
 
 ---
 
@@ -106,7 +109,35 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-01-30)
+### Latest Session (2026-02-02)
+**Freemium Paywall Implementation**
+
+1. **Usage tracking added to useLocalStorage.js**
+   - New localStorage keys: `downpour_usage_count`, `downpour_unlocked`
+   - `getUsageCount()` - returns current usage count
+   - `incrementUsageCount()` - called after each release
+   - `hasReachedLimit` - computed, true if count >= 7 and not unlocked
+   - `isUnlocked` - computed, checks unlock status
+   - `setUnlocked()` - marks app as unlocked (for billing callback)
+
+2. **PaywallScreen.vue created**
+   - Warm copy: "You've found something that helps."
+   - Unlock button (placeholder for Google Play Billing)
+   - "Browse your archive" and "Back to home" navigation
+   - Mountain silhouettes, matches app aesthetic
+
+3. **Paywall checks added**
+   - HomeScreen.vue: "Let it fall away" redirects to paywall if limit reached
+   - WriteScreen.vue: Redirects on mount and on release attempt if limit reached
+
+4. **Router updated**
+   - Added `/paywall` route
+
+5. **Workflow documentation created**
+   - CLAUDE.md - workflow orchestration rules
+   - tasks/lessons.md - pattern tracking for self-improvement
+
+### Previous Session (2026-01-30)
 **UX Improvements: Clear All Data Relocation + Code Cleanup**
 
 1. **"Clear All Data" moved from Settings to Archive** - Now in top-right of Archive header
@@ -278,23 +309,24 @@ All P0 items done:
 3. ~~Configure digital asset links~~ DONE (URL bar hidden)
 4. ~~Test APK on Samsung S24~~ DONE
 5. ~~Privacy policy hosting~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
-6. Implement freemium paywall (7 free uses, then $6.99 unlock)
-7. Rebuild APK after freemium implementation
-8. Screenshots on S24
-9. Play Store listing and submission
+6. ~~Implement freemium paywall~~ DONE (UI complete, billing placeholder)
+7. Integrate Google Play Billing
+8. Rebuild APK after billing implementation
+9. Screenshots on S24
+10. Play Store listing and submission
 
 **Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
 
 ---
 
-## Freemium Model (To Implement)
+## Freemium Model (IMPLEMENTED)
 
 ### Pricing
 - **7 free releases** then paywall
 - **$6.99 USD one-time** lifetime unlock (Google Play Billing)
 
-### Paywall UX
-When user hits 7 uses, show screen:
+### Paywall UX (Live at `/paywall`)
+When user hits 7 uses, PaywallScreen shows:
 
 > **"You've found something that helps."**
 >
@@ -304,18 +336,24 @@ When user hits 7 uses, show screen:
 >
 > **[Unlock Downpour - $6.99]**
 >
-> *One-time purchase. No subscriptions. No recurring charges.*
+> *One-time purchase. No subscriptions.*
 
 **What's blocked:** Writing new entries, release ritual
 **What's still accessible:** Archive (browse past releases), Settings
 
-### Files to Modify
-| File | Change |
+### Implementation Status
+| File | Status |
 |------|--------|
-| `src/composables/useLocalStorage.js` | Add usage counter |
-| `src/views/WriteScreen.vue` | Check counter, redirect to paywall |
-| `src/views/PaywallScreen.vue` | NEW - create paywall UI |
-| `src/router.js` | Add paywall route |
+| `src/composables/useLocalStorage.js` | DONE - usage counter + unlock tracking |
+| `src/views/WriteScreen.vue` | DONE - redirects to paywall |
+| `src/views/HomeScreen.vue` | DONE - redirects to paywall |
+| `src/views/PaywallScreen.vue` | DONE - paywall UI (placeholder unlock button) |
+| `src/router.js` | DONE - /paywall route added |
+
+### Remaining: Google Play Billing
+- `setUnlocked()` ready to call after successful purchase
+- Need to integrate Play Billing Library
+- Need to set up Product ID in Play Console
 
 ---
 
@@ -466,11 +504,42 @@ https://github.com/testdev-lar/downpourphone
 
 ---
 
+## Claude Workflow Rules
+
+### Orchestration
+- **Plan mode default** - Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
+- **Stop and re-plan** - If something goes sideways, STOP and re-plan immediately
+- **Subagent strategy** - Offload research/exploration to subagents to keep main context clean
+- **One task per subagent** - For focused execution
+
+### Self-Improvement
+- After ANY correction: update `tasks/lessons.md` with the pattern
+- Write rules to prevent the same mistake
+- Review lessons at session start
+
+### Verification
+- Never mark a task complete without proving it works
+- Ask: "Would a staff engineer approve this?"
+- Run tests, check logs, demonstrate correctness
+
+### Task Management
+1. Write plan to `ROADMAP.md` with checkable items
+2. Check in before starting implementation
+3. Mark items complete as you go
+4. Update `tasks/lessons.md` after corrections
+
+### Core Principles
+- **Simplicity First** - Make every change as simple as possible
+- **No Laziness** - Find root causes, no temporary fixes
+- **Minimal Impact** - Changes should only touch what's necessary
+
+---
+
 ## Notes for Claude
 
 - User prefers **quick fixes over lengthy explanations**
 - User wants **no emojis** unless requested
-- All data is in **localStorage** - keys are `downpour_entries` and `downpour_settings`
+- All data is in **localStorage** - keys are `downpour_entries`, `downpour_settings`, `downpour_usage_count`, `downpour_unlocked`
 - Current prompts in **sessionStorage** - key is `downpour_current_prompt`
 - The audio system is a **state machine singleton** - STORM or NATURE state
 - Storm continues seamlessly across screen transitions (no restart)

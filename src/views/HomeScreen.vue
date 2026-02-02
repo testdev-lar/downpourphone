@@ -107,10 +107,12 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
+import { useLocalStorage } from '../composables/useLocalStorage'
 
 const router = useRouter()
 const { playStorm, syncMutedState } = useAudio()
 const { triggerHaptic } = useHaptics()
+const { hasReachedLimit } = useLocalStorage()
 
 const showGuide = ref(false)
 
@@ -123,7 +125,11 @@ onMounted(() => {
 
 const goToWrite = () => {
   triggerHaptic('medium')
-  router.push('/write')
+  if (hasReachedLimit.value) {
+    router.push('/paywall')
+  } else {
+    router.push('/write')
+  }
 }
 
 const goToArchive = () => {
