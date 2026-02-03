@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascensciana</title>
+    <meta name="description" content="Beautiful, digitalized rituals. Apps designed to bring intention to everyday moments.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f1114;
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Atmospheric background */
+        .bg-atmosphere {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 70%),
+                linear-gradient(180deg, #0f1114 0%, #1a1d24 50%, #0f1114 100%);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #8b9cb3;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        /* Decorative divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 3rem 0;
+            gap: 1rem;
+        }
+
+        .divider-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 156, 179, 0.3), transparent);
+        }
+
+        .divider-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(139, 156, 179, 0.4);
+        }
+
+        /* Two column layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 640px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+        }
+
+        /* Section styling */
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #64748b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 12px;
+            height: 1px;
+            background: #64748b;
+        }
+
+        /* Philosophy section */
+        .philosophy-text {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 400;
+            color: #c9d4e3;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        /* Story section */
+        .story-text {
+            font-size: 0.95rem;
+            color: #9ca3af;
+            line-height: 1.8;
+        }
+
+        /* Project card */
+        .project {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+        }
+
+        .project::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+        }
+
+        .project:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .project-name {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.75rem;
+            font-weight: 400;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .project-desc {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
+        }
+
+        .project-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #8b9cb3;
+            padding: 0.4rem 0.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #818cf8;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Vision section */
+        .vision {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .vision-text {
+            font-size: 0.95rem;
+            color: #8b9cb3;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Connect section */
+        .connect {
+            text-align: center;
+            padding-top: 1rem;
+        }
+
+        .connect-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 0.85rem 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .connect-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .x-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 3rem;
+            font-size: 0.75rem;
+            color: #4b5563;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .container {
+                padding: 3rem 1.5rem;
+            }
+            .philosophy-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-atmosphere"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1>Ascensciana</h1>
+            <p class="tagline">Beautiful, digitalized rituals.</p>
+        </header>
+
+        <div class="grid">
+            <div>
+                <p class="section-label">Philosophy</p>
+                <p class="philosophy-text">I believe technology can hold space for what matters. Not more features, but more meaning. Apps that invite you to pause, feel, and move through moments with intention.</p>
+            </div>
+            <div>
+                <p class="section-label">The Story</p>
+                <p class="story-text">I'm Larra. I started building because I needed something that didn't exist — tools that feel like rituals, not chores. Downpour began as a personal experiment: what if releasing thoughts could feel as cathartic as rain clearing a storm?</p>
+            </div>
+        </div>
+
+        <div class="divider">
+            <span class="divider-line"></span>
+            <span class="divider-dot"></span>
+            <span class="divider-line"></span>
+        </div>
+
+        <p class="section-label">Current Project</p>
+        <a href="downpour.html" class="project">
+            <p class="project-name">Downpour</p>
+            <p class="project-desc">A ritual for letting go. Write what weighs on you, tag your emotion, and release it. Watch your words dissolve into rain as the storm clears. No journals to maintain. No streaks. Just closure.</p>
+            <span class="project-status">
+                <span class="status-dot"></span>
+                Coming soon to Google Play
+            </span>
+        </a>
+
+        <div class="divider">
+            <span class="divider-line"></span>
+            <span class="divider-dot"></span>
+            <span class="divider-line"></span>
+        </div>
+
+        <div class="vision">
+            <p class="section-label" style="justify-content: center;">What's Next</p>
+            <p class="vision-text">More rituals are taking shape. Small, intentional tools that bring beauty and purpose to the moments we spend with our screens. Stay close.</p>
+        </div>
+
+        <div class="connect">
+            <a href="https://x.com/ascensciana" target="_blank" rel="noopener" class="connect-link">
+                <svg class="x-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Follow @ascensciana
+            </a>
+        </div>
+
+        <footer class="footer">
+            Made with intention
+        </footer>
+    </div>
+</body>
+</html>
