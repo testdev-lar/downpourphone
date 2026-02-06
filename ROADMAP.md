@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-02-02
+**Last Updated:** 2026-02-06
 
 ## Quick Reference
 
@@ -15,7 +15,7 @@
 | **Live URL** | downpour2.netlify.app (down until Feb 9 - Netlify credits) |
 | **TWA Version** | 6 (will need rebuild after freemium) |
 | **Pricing** | $6.99 USD lifetime after 7 free uses |
-| **Creator Brand** | Ascensciana - "Beautiful, digitalized rituals" |
+| **Creator Brand** | Ascensciana - "Quiet tech for loud minds" |
 
 ---
 
@@ -34,7 +34,16 @@
 - PWA manifest and service worker configured
 - "Continue with your day" exit button on release screen
 
-### What's Fixed (This Session - 2026-01-30)
+### What's Fixed (This Session - 2026-02-06)
+- Ascensciana landing page redesigned (light/airy aesthetic, personal voice)
+- New tagline: "Quiet tech for loud minds"
+- 3-beat manifesto copy developed
+- Flip card component for projects (click to reveal)
+- Scroll fade-in animations
+- Downpour landing page updated with actual app icon
+- Both landing pages ready in ascensciana-landing/ folder
+
+### What's Fixed (Previous Session - 2026-01-30)
 - "Clear All Data" moved from Settings to Archive header
 - Changed from trash icon to "Clear all" text button (clearer for destructive action)
 - Removed verbose console.log debug statements from audio system (cleaner production console)
@@ -79,10 +88,11 @@
 **Current Phase: Pre-Launch Prep (until Feb 9)**
 
 9. **Finalize Play Store listing copy** ← CAN DO NOW
-10. **Create Downpour landing page (Carrd)** ← CAN DO NOW
-11. **Create Ascensciana landing page (Carrd)** ← CAN DO NOW
+10. ~~Create Downpour landing page~~ DONE (ascensciana-landing/downpour.html)
+11. ~~Create Ascensciana landing page~~ DONE (ascensciana-landing/index.html)
 12. **Set up @ascensciana on X** ← CAN DO NOW
 13. **Draft launch tweet thread** ← CAN DO NOW
+14. **Host landing pages** ← CAN DO NOW (GitHub Pages or similar)
 
 **After Feb 9 (Netlify back online):**
 
@@ -197,18 +207,23 @@
 4. "The storm clears." (Peaceful state)
 5. "Your private archive." (Archive screen)
 
-### Landing Pages
+### Landing Pages (DONE - ascensciana-landing/)
 
-**Downpour Page (Carrd.co free tier):**
-- Hero: "Some thoughts are too heavy to carry."
-- Sections: The Ritual (Write → Release → Breathe), Why Downpour, App Preview
-- Footer: Download button, link to Ascensciana, Privacy Policy
+**Ascensciana Page (index.html):**
+- Hero: "Ascensciana" + "Quiet tech for loud minds"
+- Manifesto: 3-beat personal copy
+- Projects: Flip card with Downpour icon (click to reveal description)
+- Contact: @ascensciana on X
+- Light/airy aesthetic with sky/periwinkle accent
 
-**Ascensciana Page (Carrd.co):**
-- Hero: "Beautiful, digitalized rituals."
-- Projects section (Downpour first)
-- About section (brief personal intro)
-- Connect: @ascensciana on X
+**Downpour Page (downpour.html):**
+- Hero: App icon + "Some thoughts are too heavy to carry."
+- The Ritual: Write → Release → Breathe
+- Why Downpour: No pressure, Truly private, Designed for closure
+- Pricing: $6.99 one-time
+- Dark stormy aesthetic (matches app)
+
+**Next:** Host on GitHub Pages or similar
 
 ### Launch Strategy (Low/No Budget)
 

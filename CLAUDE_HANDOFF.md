@@ -6,7 +6,7 @@ Downpour is a **minimalist emotional release journaling PWA** (Progressive Web A
 
 **Target:** Google Play Store release as a TWA (Trusted Web Activity).
 **Pricing:** $6.99 USD lifetime unlock after 7 free uses.
-**Creator Brand:** Ascensciana - "Beautiful, digitalized rituals"
+**Creator Brand:** Ascensciana - "Quiet tech for loud minds"
 
 ---
 
@@ -58,8 +58,10 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 | `src/views/*.vue` | All screen components |
 | `public/audio/` | Audio files: storm-heavy.mp3, thunder-rumble.mp3, nature-peaceful.mp3 |
 | `vite.config.js` | PWA manifest, service worker, workbox config |
-| `CLAUDE.md` | **NEW** - Workflow orchestration rules for Claude |
-| `tasks/lessons.md` | **NEW** - Pattern tracking for self-improvement |
+| `CLAUDE.md` | Workflow orchestration rules for Claude |
+| `tasks/lessons.md` | Pattern tracking for self-improvement |
+| `ascensciana-landing/index.html` | Ascensciana brand landing page (light/airy) |
+| `ascensciana-landing/downpour.html` | Downpour app landing page (dark/stormy) |
 
 ---
 
@@ -110,7 +112,32 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-02-02)
+### Latest Session (2026-02-06)
+**Landing Page Redesign**
+
+1. **Ascensciana landing page completely redesigned**
+   - Light/airy aesthetic (warm white background, sky/periwinkle accent)
+   - New tagline: "Quiet tech for loud minds"
+   - 3-beat manifesto: Hook → Origin → Invitation
+   - Flip card for Downpour project (click to reveal description)
+   - Scroll fade-in animations
+   - Personal & intimate voice
+
+2. **Downpour landing page updated**
+   - Replaced emoji icon with actual app icon
+   - Maintained dark stormy aesthetic (matches app)
+
+3. **Copy developed:**
+   - "I build small rituals for heavy days."
+   - "I made Downpour because I needed it myself."
+   - "If you need a moment to breathe, maybe these can help."
+
+4. **Files created/modified:**
+   - `ascensciana-landing/index.html` - Complete rewrite
+   - `ascensciana-landing/downpour.html` - Icon update
+   - `ascensciana-landing/downpour-icon.png` - App icon asset
+
+### Previous Session (2026-02-02)
 **Freemium Paywall + Google Play Billing Integration**
 
 1. **Usage tracking added to useLocalStorage.js**
@@ -423,11 +450,12 @@ Made with care by Ascensciana.
 - App preview screenshots
 - Download button + link to Ascensciana
 
-**Ascensciana Landing Page** (Carrd.co)
-- "Beautiful, digitalized rituals."
-- Projects: Downpour (first app)
-- About: Brief personal intro
+**Ascensciana Landing Page** (ascensciana-landing/index.html) - DONE
+- "Quiet tech for loud minds"
+- Manifesto: 3-beat personal copy
+- Projects: Flip card with Downpour (click to reveal)
 - Connect: @ascensciana on X
+- Light/airy aesthetic
 
 ### Pre-Launch Marketing (Free)
 - Set up @ascensciana on X
@@ -471,7 +499,14 @@ public/
 │   ├── storm-heavy.mp3
 │   ├── thunder-rumble.mp3
 │   └── nature-peaceful.mp3
-└── ... (icons, manifest)
+├── icons/
+│   └── icon-512x512.png    # App icon
+└── ... (manifest)
+
+ascensciana-landing/
+├── index.html              # Ascensciana brand page (light/airy)
+├── downpour.html           # Downpour app page (dark/stormy)
+└── downpour-icon.png       # App icon asset
 ```
 
 ---
