@@ -106,10 +106,16 @@ export function useLocalStorage() {
   }
 
   const getEntriesSortedByDate = computed(() => {
-    return [...entries.value].sort((a, b) => 
+    return [...entries.value].sort((a, b) =>
       new Date(b.timestamp) - new Date(a.timestamp)
     )
   })
+
+  const resetUsageForDemo = () => {
+    localStorage.removeItem(USAGE_KEY)
+    localStorage.removeItem(UNLOCKED_KEY)
+    console.log('Demo reset: Usage counter cleared')
+  }
 
   loadEntries()
 
@@ -126,6 +132,7 @@ export function useLocalStorage() {
     getUsageCount,
     hasReachedLimit,
     isUnlocked,
-    setUnlocked
+    setUnlocked,
+    resetUsageForDemo
   }
 }

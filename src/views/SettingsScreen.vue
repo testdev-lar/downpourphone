@@ -20,7 +20,15 @@
           Back
         </button>
 
-        <h1 class="text-xl font-light text-text-primary">Settings</h1>
+        <h1
+          class="text-xl font-light text-text-primary"
+          @touchstart="handleTitlePress"
+          @touchend="handleTitleRelease"
+          @mousedown="handleTitlePress"
+          @mouseup="handleTitleRelease"
+        >
+          Settings
+        </h1>
 
         <div class="w-12"></div>
       </div>
@@ -96,6 +104,29 @@
             </svg>
           </a>
         </div>
+
+        <div class="bg-bg-secondary/40 border border-border rounded-2xl overflow-hidden backdrop-blur-sm">
+          <a
+            href="https://testdev-lar.github.io/ascensciana-landing/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="touch-target w-full px-4 py-4 flex items-center gap-3 text-left hover:bg-accent-light/10 transition-colors"
+          >
+            <div class="w-10 h-10 rounded-full bg-accent-light/10 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" class="w-5 h-5 text-accent-light" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-text-primary font-medium">Visit Ascensciana</p>
+              <p class="text-text-muted text-sm">Official website</p>
+            </div>
+            <svg viewBox="0 0 24 24" class="w-6 h-6 text-text-muted" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -106,10 +137,31 @@
 import { useRouter } from 'vue-router'
 import { useAudio } from '../composables/useAudio'
 import { useHaptics } from '../composables/useHaptics'
+import { useLocalStorage } from '../composables/useLocalStorage'
 
 const router = useRouter()
 const { toggleMute, isMuted, stopAll, playStorm } = useAudio()
 const { triggerHaptic } = useHaptics()
+const { resetUsageForDemo } = useLocalStorage()
+
+let longPressTimer = null
+
+const handleTitlePress = () => {
+  longPressTimer = setTimeout(() => {
+    triggerHaptic('heavy')
+    if (confirm('Reset usage counter for demo?')) {
+      resetUsageForDemo()
+      alert('Demo reset complete! App now shows as if it has 0 uses.')
+    }
+  }, 3000) // 3 second long press
+}
+
+const handleTitleRelease = () => {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer)
+    longPressTimer = null
+  }
+}
 
 const toggleSound = () => {
   triggerHaptic('medium')
