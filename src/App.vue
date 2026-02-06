@@ -10,11 +10,11 @@
 </template>
 
 <script setup>
-import { ref, provide } from 'vue'
+import { ref, provide, onMounted, onBeforeUnmount } from 'vue'
 import BackgroundRain from './components/BackgroundRain.vue'
 import { useAudio } from './composables/useAudio'
 
-const { playOneShot } = useAudio()
+const { playOneShot, stopAll } = useAudio()
 
 // Phase-based clearing: 0=normal, 1=slowing, 2=sparse, 3=fading out
 const clearingPhase = ref(0)
@@ -30,6 +30,29 @@ const onLightning = () => {
 provide('rainClearing', {
   clearingPhase,
   setPhase
+})
+
+// Stop audio when app goes to background or is hidden
+const handleVisibilityChange = () => {
+  if (document.hidden || document.visibilityState === 'hidden') {
+    stopAll()
+  }
+}
+
+const handlePageHide = () => {
+  stopAll()
+}
+
+onMounted(() => {
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('pagehide', handlePageHide)
+  window.addEventListener('blur', stopAll)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  window.removeEventListener('pagehide', handlePageHide)
+  window.removeEventListener('blur', stopAll)
 })
 </script>
 

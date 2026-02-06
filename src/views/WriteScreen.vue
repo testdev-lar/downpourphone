@@ -72,10 +72,10 @@
 
         <button
           @click="handleRelease"
-          :disabled="!text.trim()"
+          :disabled="!text.trim() || isSubmitting"
           class="touch-target w-full py-4 mt-4 bg-accent-light/10 hover:bg-accent-light/20 disabled:bg-bg-secondary/30 disabled:border-border disabled:text-text-muted/50 text-accent-light rounded-2xl transition-all duration-300 border border-accent-light/30 backdrop-blur-sm active:scale-95 disabled:active:scale-100"
         >
-          Release
+          {{ isSubmitting ? 'Releasing...' : 'Release' }}
         </button>
       </div>
     </div>
@@ -96,6 +96,7 @@ const charLimit = 280
 
 const text = ref('')
 const selectedEmotion = ref(null)
+const isSubmitting = ref(false)
 
 const emotions = [
   'Anxious',
@@ -168,6 +169,7 @@ const toggleEmotion = (emotion) => {
 
 const handleRelease = () => {
   if (!text.value.trim()) return
+  if (isSubmitting.value) return // Prevent duplicate submissions
 
   // Safety check for paywall limit
   if (hasReachedLimit.value) {
@@ -175,6 +177,7 @@ const handleRelease = () => {
     return
   }
 
+  isSubmitting.value = true
   triggerHaptic('medium')
 
   saveEntry({
