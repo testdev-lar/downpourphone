@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "app.downpour.twa",
-    "sha256_cert_fingerprints": ["AD:F1:38:72:3D:BF:B8:A0:90:BA:CC:7A:E3:05:6C:A7:83:EB:53:BC:57:D6:1D:BF:8B:77:C0:F0:7C:C5:F4:26"]
+    "sha256_cert_fingerprints": ["40:55:21:9D:8D:EE:7B:57:AD:B1:67:2A:62:E8:6A:BC:CE:EC:5C:5B:17:AE:94:DE:2F:D2:D1:8B:63:4C:D2:F6"]
   }
 }]
