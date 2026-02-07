@@ -21,15 +21,15 @@ export function useHaptics() {
     // Define vibration patterns for different intensities
     // Values are in milliseconds
     const patterns = {
-      light: 25,    // Subtle tap
-      medium: 50,   // Standard feedback
-      heavy: 100    // Strong confirmation
+      light: 50,           // Subtle tap
+      medium: 100,         // Standard feedback
+      heavy: [50, 30, 80]  // Strong double-tap confirmation
     }
 
-    const duration = patterns[intensity] || patterns.medium
+    const pattern = patterns[intensity] || patterns.medium
 
     try {
-      navigator.vibrate(duration)
+      navigator.vibrate(pattern)
     } catch (error) {
       // Silently fail if vibration not available
       console.debug('Haptic feedback not available:', error)
