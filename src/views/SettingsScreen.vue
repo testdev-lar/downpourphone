@@ -68,6 +68,22 @@
         </div>
 
         <div class="bg-bg-secondary/40 border border-border rounded-2xl p-4 backdrop-blur-sm">
+          <button
+            @click="handleExport"
+            class="touch-target w-full flex items-center justify-between"
+          >
+            <div class="text-left">
+              <p class="text-text-primary font-medium">Export data</p>
+              <p class="text-text-muted text-sm">Download your releases as JSON</p>
+            </div>
+
+            <svg viewBox="0 0 24 24" class="w-6 h-6 text-text-muted" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="bg-bg-secondary/40 border border-border rounded-2xl p-4 backdrop-blur-sm">
           <div>
             <p class="text-text-primary font-medium mb-1">About</p>
             <p class="text-text-muted text-sm">Downpour</p>
@@ -125,10 +141,20 @@
       </div>
     </div>
 
+    <!-- Export feedback toast -->
+    <transition name="fade">
+      <div
+        v-if="showExportFeedback"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-bg-secondary/95 border border-border rounded-full text-text-primary backdrop-blur-sm z-50"
+      >
+        {{ exportMessage }}
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import MountainBackground from '../components/MountainBackground.vue'
 import { useAudio } from '../composables/useAudio'
@@ -138,7 +164,10 @@ import { useLocalStorage } from '../composables/useLocalStorage'
 const router = useRouter()
 const { toggleMute, isMuted, stopAll, playStorm } = useAudio()
 const { triggerHaptic } = useHaptics()
-const { resetUsageForDemo } = useLocalStorage()
+const { resetUsageForDemo, getEntriesSortedByDate, entriesLoaded } = useLocalStorage()
+
+const showExportFeedback = ref(false)
+const exportMessage = ref('')
 
 let longPressTimer = null
 
@@ -174,6 +203,44 @@ const handleReplayTutorial = () => {
   localStorage.removeItem('downpour_onboarding_complete')
   // Storm continues playing through onboarding
   router.push('/onboarding')
+}
+
+const handleExport = async () => {
+  triggerHaptic('medium')
+  await entriesLoaded
+  const entries = getEntriesSortedByDate.value
+
+  if (entries.length === 0) {
+    exportMessage.value = 'Nothing to export'
+    showExportFeedback.value = true
+    setTimeout(() => { showExportFeedback.value = false }, 2000)
+    return
+  }
+
+  const exportData = {
+    exportedAt: new Date().toISOString(),
+    version: '1.0.0',
+    entries: entries.map(e => ({
+      timestamp: e.timestamp,
+      text: e.text,
+      emotion: e.emotion || null
+    }))
+  }
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const date = new Date().toISOString().split('T')[0]
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `downpour-export-${date}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+
+  exportMessage.value = `Exported ${entries.length} ${entries.length === 1 ? 'release' : 'releases'}`
+  showExportFeedback.value = true
+  setTimeout(() => { showExportFeedback.value = false }, 2000)
 }
 
 const goBack = () => {

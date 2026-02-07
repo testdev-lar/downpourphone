@@ -1,17 +1,20 @@
 <template>
   <div class="relative min-h-screen">
     <BackgroundRain :clearingPhase="clearingPhase" @lightning="onLightning" />
-    <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" />
-      </transition>
-    </router-view>
+    <ErrorBoundary>
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </ErrorBoundary>
   </div>
 </template>
 
 <script setup>
 import { ref, provide, onMounted, onBeforeUnmount } from 'vue'
 import BackgroundRain from './components/BackgroundRain.vue'
+import ErrorBoundary from './components/ErrorBoundary.vue'
 import { useAudio } from './composables/useAudio'
 
 const { playOneShot, stopAll } = useAudio()
