@@ -24,6 +24,9 @@ const isOperationInProgress = ref(false)
 // Track fadeOut timeout so it can be cancelled
 const fadeOutTimeoutId = ref(null)
 
+// Track global event listeners to enable cleanup and prevent memory leaks
+const listeners = new Set()
+
 // Load muted state from localStorage (default: sound ON)
 const loadMutedState = () => {
   try {
@@ -58,23 +61,64 @@ const initAudio = async () => {
   }
 }
 
-// Set up global event listeners once
+/**
+ * Set up global event listeners for audio initialization on user interaction.
+ * Listeners are tracked in a Set to enable proper cleanup and prevent memory leaks.
+ */
 const setupGlobalListeners = () => {
   if (isInitialized.value) return
   isInitialized.value = true
 
   const handleUserInteraction = () => {
     initAudio()
-    document.removeEventListener('click', handleUserInteraction)
-    document.removeEventListener('touchstart', handleUserInteraction)
+    // Remove interaction listeners (no longer needed after first interaction)
+    removeInteractionListeners()
   }
 
   document.addEventListener('click', handleUserInteraction)
   document.addEventListener('touchstart', handleUserInteraction)
+
+  // Track listener references for cleanup
+  listeners.add({ type: 'click', handler: handleUserInteraction })
+  listeners.add({ type: 'touchstart', handler: handleUserInteraction })
 }
 
-// Initialize listeners immediately when module loads
-setupGlobalListeners()
+// Remove only the interaction listeners (not the full cleanup)
+const removeInteractionListeners = () => {
+  listeners.forEach(({ type, handler }) => {
+    document.removeEventListener(type, handler)
+  })
+  listeners.clear()
+}
+
+/**
+ * Clean up all global event listeners and close the AudioContext.
+ * This prevents memory leaks and allows garbage collection of listeners.
+ * Call this when leaving a page or when audio system needs to be reset.
+ */
+const cleanup = () => {
+  // Remove all tracked event listeners
+  listeners.forEach(({ type, handler }) => {
+    document.removeEventListener(type, handler)
+  })
+  listeners.clear()
+
+  // Close AudioContext if it exists
+  if (audioContext.value) {
+    try {
+      if (audioContext.value.state !== 'closed') {
+        audioContext.value.close()
+      }
+    } catch (e) {
+      console.error('Error closing audio context during cleanup:', e)
+    }
+    audioContext.value = null
+  }
+
+  // Reset initialization flag to allow re-initialization if needed
+  isInitialized.value = false
+  isReady.value = false
+}
 
 export function useAudio() {
   // Load audio buffer (with caching)
@@ -100,6 +144,11 @@ export function useAudio() {
 
   // Ensure AudioContext is ready
   const ensureAudioReady = async () => {
+    // Set up global listeners on first audio request (lazy initialization)
+    if (!isInitialized.value) {
+      setupGlobalListeners()
+    }
+
     // If context is closed or in bad state, recreate it
     if (audioContext.value &&
         (audioContext.value.state === 'closed')) {
@@ -405,6 +454,7 @@ export function useAudio() {
     toggleMute,
     syncMutedState,
     isStormPlaying,
-    cancelFade
+    cancelFade,
+    cleanup
   }
 }

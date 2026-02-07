@@ -46,13 +46,11 @@ const handlePageHide = () => {
 onMounted(() => {
   document.addEventListener('visibilitychange', handleVisibilityChange)
   window.addEventListener('pagehide', handlePageHide)
-  window.addEventListener('blur', stopAll)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', handleVisibilityChange)
   window.removeEventListener('pagehide', handlePageHide)
-  window.removeEventListener('blur', stopAll)
 })
 </script>
 

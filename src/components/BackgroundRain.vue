@@ -36,6 +36,7 @@ const emit = defineEmits(['lightning'])
 const rainContainer = ref(null)
 const raindrops = ref([])
 const isLightning = ref(false)
+const isMounted = ref(false)
 let lightningTimeout = null
 
 onMounted(() => {
@@ -55,9 +56,11 @@ onMounted(() => {
 
   // Start lightning cycle
   scheduleLightning()
+  isMounted.value = true
 })
 
 onUnmounted(() => {
+  isMounted.value = false
   if (lightningTimeout) {
     clearTimeout(lightningTimeout)
   }
@@ -65,10 +68,16 @@ onUnmounted(() => {
 
 // Schedule next lightning strike
 const scheduleLightning = () => {
+  // Stop scheduling if component is unmounted
+  if (!isMounted.value) return
+
   // Random interval between 5-12 seconds
   const delay = 5000 + Math.random() * 7000
 
   lightningTimeout = setTimeout(() => {
+    // Stop execution if component unmounted between scheduling and firing
+    if (!isMounted.value) return
+
     // Only trigger lightning during stormy phase
     if (props.clearingPhase === 0) {
       triggerLightning()
@@ -79,17 +88,23 @@ const scheduleLightning = () => {
 }
 
 const triggerLightning = () => {
+  // Defensive check: don't mutate state if unmounted
+  if (!isMounted.value) return
+
   // First flash
   isLightning.value = true
 
   setTimeout(() => {
+    if (!isMounted.value) return
     isLightning.value = false
 
     // 50% chance of double flash
     if (Math.random() > 0.5) {
       setTimeout(() => {
+        if (!isMounted.value) return
         isLightning.value = true
         setTimeout(() => {
+          if (!isMounted.value) return
           isLightning.value = false
         }, 80)
       }, 100)
@@ -98,6 +113,7 @@ const triggerLightning = () => {
 
   // Emit event for thunder sound (200-500ms after flash)
   setTimeout(() => {
+    if (!isMounted.value) return
     emit('lightning')
   }, 200 + Math.random() * 300)
 }

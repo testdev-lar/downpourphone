@@ -151,6 +151,9 @@ const birdInterval = ref(null)
 // Track all timeouts for cleanup
 const activeTimeouts = []
 
+// Mount tracking for defensive callback guards
+const isMounted = ref(false)
+
 // Color interpolation helper
 const interpolateColor = (from, to, progress) => {
   return from.map((f, i) => Math.round(f + (to[i] - f) * progress))
@@ -183,7 +186,18 @@ const skyStyle = computed(() => {
   }
 })
 
+// Wrapper function to safely execute callbacks only when component is mounted
+const safeCallback = (callback) => {
+  return () => {
+    if (!isMounted.value) return
+    callback()
+  }
+}
+
 onMounted(() => {
+  // Mark component as mounted for defensive callback guards
+  isMounted.value = true
+
   // Sync muted state from localStorage in case it changed
   syncMutedState()
 
@@ -197,13 +211,18 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Set isMounted to false FIRST so callbacks exit immediately
+  isMounted.value = false
+
   // Reset clearing state when leaving
   if (rainClearing) {
     rainClearing.setPhase(0)
   }
+
   // Clear bird interval
   if (birdInterval.value) {
     clearInterval(birdInterval.value)
+    birdInterval.value = null
   }
 
   // Clear all tracked timeouts
@@ -224,7 +243,7 @@ const startClearingSequence = () => {
 
   // Stage 1: Text dissolving starts (500ms)
   // Also start fading out storm audio
-  addTimeout(async () => {
+  addTimeout(safeCallback(async () => {
     isDissolving.value = true
     animationStage.value = 1
     // Start fading out storm (4000ms fade)
@@ -233,80 +252,80 @@ const startClearingSequence = () => {
     } catch {
       // Audio fade failed silently
     }
-  }, 500)
+  }), 500)
 
   // Stage 2: Rain slowing, sky lightening (1500ms)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     animationStage.value = 2
     if (rainClearing) {
       rainClearing.setPhase(1)
     }
-  }, 1500)
+  }), 1500)
 
   // Stage 3: Sun emerging, rain sparse (3000ms)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     animationStage.value = 3
     if (rainClearing) {
       rainClearing.setPhase(2)
     }
-  }, 3000)
+  }), 3000)
 
   // Brief silence period - storm fades from 500ms to 4500ms (4000ms duration)
   // Nature starts fading in at 5000ms (500ms after storm fully silent)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     playNature(2000) // 2 second fade in
-  }, 5000)
+  }), 5000)
 
   // Hide text (4500ms - after 4s dissolve completes)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     showText.value = false
-  }, 4500)
+  }), 4500)
 
   // Stage 4: Full clearing, rain stops (5500ms)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     animationStage.value = 4
     if (rainClearing) {
       rainClearing.setPhase(3)
     }
-  }, 5500)
+  }), 5500)
 
   // Stage 5 + first line (6500ms)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     animationStage.value = 5
     showFirstLine.value = true
-  }, 6500)
+  }), 6500)
 
   // Second line (7500ms)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     showSecondLine.value = true
-  }, 7500)
+  }), 7500)
 
   // Sunrise glow starts (8000ms - after text fades in)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     showSunriseGlow.value = true
-  }, 8000)
+  }), 8000)
 
   // Button (8500ms)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     showButton.value = true
-  }, 8500)
+  }), 8500)
 
   // First bird (7 seconds after words fade in)
-  addTimeout(() => {
+  addTimeout(safeCallback(() => {
     triggerBird()
-  }, 14500) // 7500ms (second line) + 7000ms
+  }), 14500) // 7500ms (second line) + 7000ms
 
   // Occasional birds every 15 seconds
-  birdInterval.value = setInterval(() => {
+  birdInterval.value = setInterval(safeCallback(() => {
     triggerBird()
-  }, 15000)
+  }), 15000)
 }
 
 const triggerBird = () => {
   showBird.value = true
-  const timeoutId = setTimeout(() => {
+  const timeoutId = setTimeout(safeCallback(() => {
     showBird.value = false
-  }, 16000) // Bird animation lasts 16 seconds
+  }), 16000) // Bird animation lasts 16 seconds
   activeTimeouts.push(timeoutId)
 }
 

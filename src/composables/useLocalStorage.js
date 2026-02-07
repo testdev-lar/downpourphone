@@ -1,20 +1,47 @@
 import { ref, computed } from 'vue'
+import { STORAGE_KEYS, FREE_RELEASE_LIMIT } from '../constants/app'
+import { encryptText, decryptText } from '../utils/crypto'
 
-const STORAGE_KEY = 'downpour_entries'
-const ONBOARDING_KEY = 'downpour_onboarding_complete'
-const SETTINGS_KEY = 'downpour_settings'
-const USAGE_KEY = 'downpour_usage_count'
-const UNLOCKED_KEY = 'downpour_unlocked'
-const FREE_LIMIT = 7
+const STORAGE_KEY = STORAGE_KEYS.ENTRIES
+const ONBOARDING_KEY = STORAGE_KEYS.ONBOARDING
+const SETTINGS_KEY = STORAGE_KEYS.SETTINGS
+const USAGE_KEY = STORAGE_KEYS.USAGE
+const UNLOCKED_KEY = STORAGE_KEYS.UNLOCKED
+const USAGE_CHECK_KEY = USAGE_KEY + '_check'
+const FREE_LIMIT = FREE_RELEASE_LIMIT
+
+const calculateChecksum = (value) => {
+  let hash = 0
+  const str = 'downpour_' + String(value)
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return hash.toString(36)
+}
 
 export function useLocalStorage() {
   const entries = ref([])
 
-  const loadEntries = () => {
+  const loadEntries = async () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        entries.value = JSON.parse(stored)
+        const parsed = JSON.parse(stored)
+        // Decrypt encrypted entries
+        const decrypted = await Promise.all(parsed.map(async (entry) => {
+          if (entry.encrypted && entry.text) {
+            try {
+              return { ...entry, text: await decryptText(entry.text) }
+            } catch (e) {
+              console.error('Failed to decrypt entry:', e)
+              return entry // Return as-is if decryption fails
+            }
+          }
+          return entry // Old unencrypted entries pass through
+        }))
+        entries.value = decrypted
       }
     } catch (e) {
       console.error('Failed to load entries:', e)
@@ -22,29 +49,51 @@ export function useLocalStorage() {
     }
   }
 
-  const saveEntry = (entry) => {
+  const saveEntry = async (entry) => {
     const newEntry = {
       id: Date.now().toString(),
       timestamp: new Date().toISOString(),
       ...entry
     }
+    // Keep plaintext in memory for display
     entries.value.unshift(newEntry)
-    persistEntries()
+    // Persist with encrypted text
+    await persistEntries()
     incrementUsageCount()
     return newEntry
   }
 
-  const persistEntries = () => {
+  const persistEntries = async () => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.value))
+      // Encrypt text before storing
+      const toStore = await Promise.all(entries.value.map(async (entry) => {
+        if (entry.text && !entry.encrypted) {
+          try {
+            return { ...entry, text: await encryptText(entry.text), encrypted: true }
+          } catch (e) {
+            console.error('Failed to encrypt entry:', e)
+            return entry // Store unencrypted as fallback
+          }
+        }
+        // Already encrypted entries: re-encrypt with current plaintext
+        if (entry.text && entry.encrypted) {
+          try {
+            return { ...entry, text: await encryptText(entry.text) }
+          } catch (e) {
+            return entry
+          }
+        }
+        return entry
+      }))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore))
     } catch (e) {
       console.error('Failed to save entries:', e)
     }
   }
 
-  const deleteEntry = (id) => {
+  const deleteEntry = async (id) => {
     entries.value = entries.value.filter(entry => entry.id !== id)
-    persistEntries()
+    await persistEntries()
   }
 
   const clearAllEntries = () => {
@@ -82,14 +131,33 @@ export function useLocalStorage() {
     }
   }
 
-  // Usage tracking for freemium paywall
+  // Usage tracking for freemium paywall (with anti-tampering)
   const getUsageCount = () => {
-    return parseInt(localStorage.getItem(USAGE_KEY) || '0', 10)
+    const count = parseInt(localStorage.getItem(USAGE_KEY) || '0', 10)
+    const storedChecksum = localStorage.getItem(USAGE_CHECK_KEY)
+
+    // If there's a count but no checksum (first run or old data), set the checksum
+    if (count > 0 && !storedChecksum) {
+      localStorage.setItem(USAGE_CHECK_KEY, calculateChecksum(count))
+      return count
+    }
+
+    // Verify checksum matches
+    if (storedChecksum && storedChecksum !== calculateChecksum(count)) {
+      console.warn('Usage count integrity check failed')
+      // Reset to 0 - tampering detected
+      localStorage.setItem(USAGE_KEY, '0')
+      localStorage.setItem(USAGE_CHECK_KEY, calculateChecksum(0))
+      return 0
+    }
+
+    return count
   }
 
   const incrementUsageCount = () => {
     const count = getUsageCount() + 1
     localStorage.setItem(USAGE_KEY, count.toString())
+    localStorage.setItem(USAGE_CHECK_KEY, calculateChecksum(count))
     return count
   }
 
@@ -113,13 +181,16 @@ export function useLocalStorage() {
 
   const resetUsageForDemo = () => {
     localStorage.removeItem(USAGE_KEY)
+    localStorage.removeItem(USAGE_CHECK_KEY)
     localStorage.removeItem(UNLOCKED_KEY)
     console.log('Demo reset: Usage counter cleared')
   }
 
-  loadEntries()
+  // Load entries asynchronously (entries ref updates when ready)
+  const entriesLoaded = loadEntries()
 
   return {
+    entriesLoaded,
     entries,
     getEntriesSortedByDate,
     saveEntry,

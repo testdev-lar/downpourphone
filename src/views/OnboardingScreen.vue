@@ -14,19 +14,8 @@
       </button>
     </transition>
 
-    <!-- Mountain silhouettes (same as release screen) -->
-    <div class="fixed bottom-0 left-0 right-0 h-[25vh] pointer-events-none">
-      <svg viewBox="0 0 400 100" preserveAspectRatio="none" class="w-full h-full relative z-10">
-        <path
-          d="M0 100 L0 60 L50 30 L100 50 L150 20 L200 45 L250 25 L300 55 L350 35 L400 50 L400 100 Z"
-          fill="rgba(30, 41, 59, 0.3)"
-        />
-        <path
-          d="M0 100 L0 70 L80 45 L140 65 L200 40 L280 60 L340 50 L400 70 L400 100 Z"
-          fill="rgba(30, 41, 59, 0.5)"
-        />
-      </svg>
-    </div>
+    <!-- Mountain silhouettes -->
+    <MountainBackground />
 
     <!-- Onboarding content -->
     <div class="relative z-20 w-full max-w-md">
@@ -154,6 +143,8 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import MountainBackground from '../components/MountainBackground.vue'
+import { CHAR_LIMIT, EMOTIONS, WRITING_PROMPTS } from '../constants/app'
 import { useLocalStorage } from '../composables/useLocalStorage'
 import { useHaptics } from '../composables/useHaptics'
 
@@ -164,37 +155,15 @@ const { triggerHaptic } = useHaptics()
 const currentScreen = ref(0)
 const selectedEmotion = ref(null)
 const text = ref('')
-const charLimit = 280
+const charLimit = CHAR_LIMIT
 const textInput = ref(null)
 
 // Highlight states for feature screens
 const highlightEmotions = ref(false)
 const highlightTextInput = ref(false)
 
-const emotions = [
-  'Anxious',
-  'Overwhelmed',
-  'Frustrated',
-  'Sad',
-  'Lonely',
-  'Exhausted',
-  'Angry',
-  'Restless'
-]
-
-// Daily writing prompts
-const writingPrompts = [
-  "What's one thing you'd like to let go of today?",
-  "What thought keeps circling back?",
-  "What are you holding onto that no longer serves you?",
-  "What feels too heavy to carry right now?",
-  "What would you say if no one was listening?",
-  "What needs to fall away?",
-  "What emotion is asking to be acknowledged?",
-  "What are you resisting feeling?",
-  "What truth are you avoiding?",
-  "What do you need to release to move forward?"
-]
+const emotions = EMOTIONS
+const writingPrompts = WRITING_PROMPTS
 
 const currentPrompt = ref('')
 
@@ -295,12 +264,12 @@ const handleInput = () => {
   }
 }
 
-const handleRelease = () => {
+const handleRelease = async () => {
   if (!text.value.trim()) return
 
   triggerHaptic('medium')
 
-  saveEntry({
+  await saveEntry({
     text: text.value,
     emotion: selectedEmotion.value
   })
