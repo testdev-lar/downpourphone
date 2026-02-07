@@ -7,6 +7,8 @@ Downpour is a **minimalist emotional release journaling PWA** (Progressive Web A
 **Target:** Google Play Store release as a TWA (Trusted Web Activity).
 **Pricing:** $6.99 USD lifetime unlock after 7 free uses.
 **Creator Brand:** Ascensciana - "Quiet tech for loud minds"
+**Live URL:** downpourphone.vercel.app
+**TWA Version:** 8
 
 ---
 
@@ -39,7 +41,7 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 4. **WriteScreen.vue** - Textarea for writing (280 char limit), emotion tags, "Release" button
 5. **ReleaseScreen.vue** - Animated sequence: text dissolves, sky clears, "Continue with your day" button exits app
 6. **ArchiveScreen.vue** - "Puddle" - list of past entries, expandable cards, "Clear all" button in header
-7. **SettingsScreen.vue** - Sound toggle, replay tutorial, "Connect with creator" link (@ascensciana on X)
+7. **SettingsScreen.vue** - Sound toggle, replay tutorial, export data, "Connect with creator" link (@ascensciana on X), "Visit Ascensciana" website link
 
 ---
 
@@ -47,17 +49,24 @@ Title Screen → Onboarding → Home Screen → Write Screen → Release Screen 
 
 | File | Purpose |
 |------|---------|
-| `src/App.vue` | Root component, provides rain clearing state, handles lightning→thunder |
+| `src/App.vue` | Root component, provides rain clearing state, wraps router in ErrorBoundary |
+| `src/main.js` | App entry point, global error handler |
 | `src/components/BackgroundRain.vue` | Canvas-based rain animation, lightning flashes, 4 clearing phases |
-| `src/composables/useAudio.js` | State machine audio (STORM/NATURE), singleton pattern |
-| `src/composables/useHaptics.js` | Haptic feedback system - light (10ms), medium (20ms), heavy (30ms) |
-| `src/composables/useLocalStorage.js` | Entry storage + usage tracking for freemium paywall |
-| `src/composables/useBilling.js` | **NEW** - Google Play Billing via Digital Goods API |
+| `src/components/ErrorBoundary.vue` | Catches render errors, shows recovery UI |
+| `src/components/MountainBackground.vue` | Mountain silhouettes for stormy screens |
+| `src/composables/useAudio.js` | State machine audio (STORM/NATURE), singleton, cancelFade() |
+| `src/composables/useHaptics.js` | Haptic feedback - light (50ms), medium (100ms), heavy ([50,30,80]) |
+| `src/composables/useLocalStorage.js` | Entry storage + usage tracking + encryption via crypto.js |
+| `src/composables/crypto.js` | AES-GCM encryption/decryption for entry data |
+| `src/composables/useBilling.js` | Google Play Billing via Digital Goods API |
+| `src/constants/app.js` | Emotions, writing prompts, storage keys, free release limit |
 | `src/views/PaywallScreen.vue` | Freemium paywall UI with purchase + restore flows |
 | `src/router.js` | Vue Router configuration (includes /paywall route) |
 | `src/views/*.vue` | All screen components |
 | `public/audio/` | Audio files: storm-heavy.mp3, thunder-rumble.mp3, nature-peaceful.mp3 |
 | `vite.config.js` | PWA manifest, service worker, workbox config |
+| `twa-manifest.json` | TWA configuration (v8, Vercel hosting) |
+| `app/build.gradle` | Android build config (compileSdk 36, targetSdk 35) |
 | `CLAUDE.md` | Workflow orchestration rules for Claude |
 | `tasks/lessons.md` | Pattern tracking for self-improvement |
 | `ascensciana-landing/index.html` | Ascensciana brand landing page (light/airy) |
@@ -112,7 +121,52 @@ State is shared via Vue's provide/inject from `App.vue`.
 
 ## Recent Changes (Session History)
 
-### Latest Session (2026-02-06)
+### Latest Session (2026-02-07, Round 2 - Claude Code)
+**Security, Performance, Export, Error Handling**
+
+1. **Phase 1 - Security (AES-GCM Encryption)**
+   - Created `src/composables/crypto.js` with AES-GCM encrypt/decrypt
+   - Key derived from device fingerprint
+   - All entries encrypted at rest in localStorage, decrypted in memory
+   - Transparent to existing code — `getEntriesSortedByDate` returns plaintext
+
+2. **Phase 2 - TWA Configuration**
+   - Migrated hosting from Netlify to Vercel (downpourphone.vercel.app)
+   - Updated `assetlinks.json` with new keystore SHA-256 fingerprint
+   - Updated `build.gradle`: compileSdk 36, targetSdk 35, versionCode 8
+   - Updated `twa-manifest.json` to point to Vercel host
+
+3. **Phase 3 - Duplicate Entry Bug Fix**
+   - **Root cause:** Race condition where `saveEntry()` fired multiple times before navigation
+   - **Fix 1:** `isSubmitting` flag in WriteScreen.vue prevents concurrent release calls
+   - **Fix 2:** `isMounted` + `safeCallback()` in ReleaseScreen.vue prevents stale callbacks
+   - **Fix 3:** `cancelFade()` in useAudio.js stops lingering audio callbacks
+   - Writing prompts and paywall copy tightened
+
+4. **Phase 4 - JSON Export**
+   - "Export data" button in Settings (between Replay intro and About)
+   - Downloads `downpour-export-YYYY-MM-DD.json` with all entries
+   - Uses decrypted entries from `getEntriesSortedByDate`
+   - Strips internal fields (id, encrypted) from export
+   - Shows feedback toast: "Exported X releases" or "Nothing to export"
+
+5. **Phase 4 - Error Boundary**
+   - Created `src/components/ErrorBoundary.vue` using `onErrorCaptured`
+   - Wraps `<router-view>` in App.vue
+   - Shows "Something went wrong" + "Try again" button on crash
+   - "Try again" resets error state, navigates to /home
+   - Global `app.config.errorHandler` in main.js for uncaught async errors
+
+6. **Haptics Tuning for Samsung S24**
+   - Previous values (25/50/100ms) were imperceptible on Samsung devices
+   - New values: light: 50ms, medium: 100ms, heavy: [50, 30, 80] pulsed pattern
+   - Double-tap confirmation feel for heavy actions
+
+7. **APK v8 Rebuilt**
+   - Built via `bubblewrap build`
+   - Tested on Samsung S24 — paywall, export, haptics all working
+
+### Previous Session (2026-02-06)
 **Landing Page Redesign**
 
 1. **Ascensciana landing page completely redesigned**
@@ -330,19 +384,21 @@ All P0 items done:
 - ~~S24 testing~~ DONE (basic functionality verified)
 
 ### P1 - Play Store Deployment
-1. ~~Deploy PWA to public URL~~ DONE (downpour2.netlify.app)
-2. ~~TWA packaging with Bubblewrap~~ DONE (APK/AAB built, version 6)
+1. ~~Deploy PWA to public URL~~ DONE (downpourphone.vercel.app)
+2. ~~TWA packaging with Bubblewrap~~ DONE (APK/AAB built, version 8)
 3. ~~Configure digital asset links~~ DONE (URL bar hidden)
 4. ~~Test APK on Samsung S24~~ DONE
 5. ~~Privacy policy hosting~~ DONE (https://gist.github.com/testdev-lar/c105e48d640c86f3f4eae5d050ebe412)
 6. ~~Implement freemium paywall~~ DONE
 7. ~~Integrate Google Play Billing~~ DONE (code complete)
-8. Set up product in Play Console
-9. Rebuild APK with billing
-10. Screenshots on S24
-11. Play Store listing and submission
-
-**Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
+8. ~~Rebuild APK~~ DONE (v8, tested on S24)
+9. ~~Security (encryption)~~ DONE (AES-GCM)
+10. ~~Export functionality~~ DONE (JSON export in Settings)
+11. ~~Error boundary~~ DONE (crash recovery UI)
+12. ~~Duplicate entry bug fix~~ DONE (race condition guards)
+13. Set up product in Play Console
+14. Screenshots on S24
+15. Play Store listing and submission
 
 ---
 
@@ -475,24 +531,31 @@ Made with care by Ascensciana.
 
 ```
 src/
-├── App.vue                 # Root, rain clearing provider
-├── main.js                 # App entry point
-├── router.js               # Route definitions
+├── App.vue                 # Root, rain clearing provider, ErrorBoundary wrapper
+├── main.js                 # App entry point, global error handler
+├── router.js               # Route definitions (includes /paywall)
 ├── style.css               # Global styles, Tailwind imports
 ├── components/
-│   └── BackgroundRain.vue  # Rain canvas + lightning
+│   ├── BackgroundRain.vue  # Rain canvas + lightning
+│   ├── ErrorBoundary.vue   # Catches render errors, recovery UI
+│   └── MountainBackground.vue # Mountain silhouettes
 ├── composables/
 │   ├── useAudio.js         # State machine audio (STORM/NATURE)
-│   ├── useHaptics.js       # Haptic feedback
-│   └── useLocalStorage.js  # Entry persistence
+│   ├── useBilling.js       # Google Play Billing (Digital Goods API)
+│   ├── crypto.js           # AES-GCM encryption/decryption
+│   ├── useHaptics.js       # Haptic feedback (tuned for Samsung S24)
+│   └── useLocalStorage.js  # Entry persistence + encryption + usage tracking
+├── constants/
+│   └── app.js              # Emotions, prompts, storage keys, limits
 └── views/
     ├── TitleScreen.vue      # Landing page (no icon)
     ├── OnboardingScreen.vue # 5-screen tutorial
-    ├── HomeScreen.vue       # Main app entry
-    ├── WriteScreen.vue      # Writing interface
-    ├── ReleaseScreen.vue    # Release sequence + exit button
+    ├── HomeScreen.vue       # Main app entry (paywall check)
+    ├── WriteScreen.vue      # Writing interface (isSubmitting guard)
+    ├── ReleaseScreen.vue    # Release sequence (isMounted guard)
+    ├── PaywallScreen.vue    # Freemium paywall + billing
     ├── ArchiveScreen.vue    # Past entries (puddle), clear all button
-    └── SettingsScreen.vue   # Sound, tutorial, creator link
+    └── SettingsScreen.vue   # Sound, tutorial, export, creator link
 
 public/
 ├── audio/
@@ -576,7 +639,7 @@ https://github.com/testdev-lar/downpourphone
 
 - User prefers **quick fixes over lengthy explanations**
 - User wants **no emojis** unless requested
-- All data is in **localStorage** - keys are `downpour_entries`, `downpour_settings`, `downpour_usage_count`, `downpour_unlocked`
+- All data is in **localStorage** (AES-GCM encrypted) - keys are `downpour_entries`, `downpour_settings`, `downpour_usage_count`, `downpour_unlocked`
 - Current prompts in **sessionStorage** - key is `downpour_current_prompt`
 - The audio system is a **state machine singleton** - STORM or NATURE state
 - Storm continues seamlessly across screen transitions (no restart)

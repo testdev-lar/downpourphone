@@ -1,6 +1,6 @@
 # Downpour PWA - Development Roadmap
 
-**Last Updated:** 2026-02-06
+**Last Updated:** 2026-02-07
 
 ## Quick Reference
 
@@ -12,8 +12,8 @@
 | **Tech Stack** | Vue 3 + Vite + Tailwind + Web Audio API |
 | **Data Storage** | localStorage (no backend) |
 | **Testing Device** | Samsung S24 |
-| **Live URL** | downpour2.netlify.app (down until Feb 9 - Netlify credits) |
-| **TWA Version** | 6 (will need rebuild after freemium) |
+| **Live URL** | downpourphone.vercel.app |
+| **TWA Version** | 8 (rebuilt with security + export + error boundary) |
 | **Pricing** | $6.99 USD lifetime after 7 free uses |
 | **Creator Brand** | Ascensciana - "Quiet tech for loud minds" |
 
@@ -27,14 +27,48 @@
 - Writing prompts (10 variations, session-based rotation)
 - Individual entry deletion with confirmation modal
 - Entry count display ("X thoughts released")
-- **NEW: State machine audio system (STORM/NATURE)**
+- State machine audio system (STORM/NATURE)
 - Animated release sequence (text dissolution + sky clearing)
 - 5-screen onboarding tutorial (sound toggle removed)
-- Haptic feedback across all interactions
+- Haptic feedback across all interactions (tuned for Samsung S24)
 - PWA manifest and service worker configured
 - "Continue with your day" exit button on release screen
+- **AES-GCM encryption for all stored entries**
+- **JSON export (Settings > Export data)**
+- **Error boundary with recovery UI**
+- **Duplicate entry prevention (isSubmitting guard)**
+- **Freemium paywall with Google Play Billing**
 
-### What's Fixed (This Session - 2026-02-06)
+### What's Fixed (This Session - 2026-02-07, Round 2 - Claude Code)
+
+**Phase 1 - Security:**
+- AES-GCM encryption for all localStorage entries (src/composables/crypto.js)
+- Key derivation from device fingerprint
+- Entries encrypted at rest, decrypted in memory
+
+**Phase 2 - TWA Config:**
+- Migrated hosting from Netlify to Vercel (downpourphone.vercel.app)
+- Updated asset links with new keystore fingerprint
+- TWA version bumped to 8
+- Updated build.gradle (compileSdk 36, targetSdk 35)
+
+**Phase 3 - Performance & Bug Fixes:**
+- Fixed duplicate entry bug (1 release duplicating 7x, triggering paywall)
+  - Added `isSubmitting` flag in WriteScreen.vue
+  - Added `isMounted` + `safeCallback()` in ReleaseScreen.vue
+  - Added `cancelFade()` in useAudio.js
+- Copy tightening: writing prompts and paywall text refined
+
+**Phase 4 - Export + Error Boundary:**
+- JSON export feature in Settings (downloads decrypted entries as JSON)
+- ErrorBoundary.vue component (catches render errors, shows recovery UI)
+- Global error handler in main.js
+
+**Other Fixes:**
+- Haptic feedback tuned for Samsung S24 (light:50ms, medium:100ms, heavy:[50,30,80] pattern)
+- APK v8 rebuilt via Bubblewrap and tested on S24
+
+### What's Fixed (Previous Session - 2026-02-06)
 - Ascensciana landing page redesigned (light/airy aesthetic, personal voice)
 - New tagline: "Quiet tech for loud minds"
 - 3-beat manifesto copy developed
@@ -85,7 +119,7 @@
 7. ~~Privacy policy (P1)~~ DONE
 8. ~~Implement freemium paywall (P1)~~ DONE - 7 uses then paywall
 
-**Current Phase: Pre-Launch Prep (until Feb 9)**
+**Current Phase: Play Store Submission**
 
 9. **Finalize Play Store listing copy** ← CAN DO NOW
 10. ~~Create Downpour landing page~~ DONE (ascensciana-landing/downpour.html)
@@ -93,16 +127,11 @@
 12. **Set up @ascensciana on X** ← CAN DO NOW
 13. **Draft launch tweet thread** ← CAN DO NOW
 14. **Host landing pages** ← CAN DO NOW (GitHub Pages or similar)
-
-**After Feb 9 (Netlify back online):**
-
-14. ~~Integrate Google Play Billing~~ DONE (code complete)
-15. Set up product in Play Console
-16. Rebuild and test APK
-17. Take screenshots on S24
-18. Play Store submission
-
-**Note:** Launch delayed until after Feb 9 (Netlify free tier credits exceeded)
+15. ~~Integrate Google Play Billing~~ DONE (code complete)
+16. ~~Rebuild and test APK~~ DONE (v8 on Vercel, tested on S24)
+17. Set up product in Play Console
+18. Take screenshots on S24
+19. Play Store submission
 
 ---
 
@@ -120,14 +149,16 @@
 - [x] Step 9: Generate AAB for Play Store ✅ (built alongside APK)
 - [ ] Step 10: Prepare Play Store assets ← CURRENT
 
-**Current Status:** APK built and tested. Digital asset links configured. Full-bleed icon implemented. Ready for Play Store assets.
+**Current Status:** APK v8 built and tested on S24. Hosted on Vercel. All code features complete. Ready for Play Store submission.
 
 **Issues Resolved:**
 - ~~URL bar showing at top~~ FIXED - digital asset links configured
 - ~~App icon has white border~~ FIXED - full-bleed icon implemented
+- ~~Duplicate entry bug~~ FIXED - race condition guards added
+- ~~Haptics imperceptible on S24~~ FIXED - durations increased
 - TWA shares localStorage with Chrome (known limitation - not blocking)
 
-**Next Action:** Prepare Play Store assets (screenshots, feature graphic, privacy policy)
+**Next Action:** Set up Play Console product, take screenshots, submit
 
 **Generated Files:**
 - `app-release-signed.apk` - For testing
@@ -279,16 +310,22 @@
 **Onboarding & UX:**
 - 5-screen tutorial: Text screens (0-3), emotion selector (4), first write (5)
 - "How to use Downpour" guide accessible via `?` icon on home screen
-- Haptic feedback: light (10ms), medium (20ms), heavy (30ms)
+- Haptic feedback: light (50ms), medium (100ms), heavy ([50,30,80] pattern)
 - Smooth sky transitions via color interpolation
 - Bird animations during release
 - "Continue with your day" exit button
 - "Connect with the creator" link to @ascensciana on X in Settings
 
 **Data & Persistence:**
-- localStorage: `downpour_entries`, `downpour_settings`
+- localStorage: `downpour_entries` (AES-GCM encrypted), `downpour_settings`
 - sessionStorage: `downpour_current_prompt`
-- Entry structure: `{ id, text, emotion, timestamp, date }`
+- Entry structure: `{ id, text, emotion, timestamp, date }` (encrypted at rest)
+- JSON export available in Settings
+
+**Error Handling:**
+- ErrorBoundary component wraps router-view (catches render errors)
+- Global error handler in main.js (catches uncaught async errors)
+- Recovery UI: "Something went wrong" + "Try again" button
 
 ### Not Wanted
 - Heavy Mode (600 chars)
@@ -449,7 +486,7 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 12. Play Store submission
 
 **P2 - Post-Launch:**
-- Export functionality
+- ~~Export functionality~~ DONE (JSON export in Settings)
 - Additional soundscapes
 - Accessibility improvements
 
@@ -463,20 +500,33 @@ Include: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
 **Screens:**
 - src/views/TitleScreen.vue (playStorm on mount, mountains)
 - src/views/OnboardingScreen.vue (5 screens, auto-advance on emotion, revised copy)
-- src/views/ReleaseScreen.vue ("Continue with your day" button)
+- src/views/ReleaseScreen.vue ("Continue with your day" button, isMounted guard)
 - src/views/HomeScreen.vue (`?` guide icon + modal, gear icon, mountains, paywall check)
-- src/views/WriteScreen.vue (paywall check on mount and release)
-- src/views/PaywallScreen.vue (freemium paywall UI, placeholder unlock button)
+- src/views/WriteScreen.vue (paywall check on mount and release, isSubmitting guard)
+- src/views/PaywallScreen.vue (freemium paywall UI, Google Play Billing)
 - src/views/ArchiveScreen.vue (past entries, "Clear all" button, individual delete)
-- src/views/SettingsScreen.vue (sound toggle, replay tutorial, creator link)
+- src/views/SettingsScreen.vue (sound toggle, replay tutorial, export data, creator link)
 
-**Data:**
-- src/composables/useLocalStorage.js
-- localStorage: `downpour_entries`, `downpour_settings`
+**Components:**
+- src/components/ErrorBoundary.vue (catches render errors, recovery UI)
+- src/components/BackgroundRain.vue (canvas rain + lightning)
+- src/components/MountainBackground.vue (mountain silhouettes)
+
+**Data & Security:**
+- src/composables/useLocalStorage.js (entry CRUD, usage tracking, unlock state)
+- src/composables/crypto.js (AES-GCM encryption/decryption)
+- src/composables/useBilling.js (Digital Goods API for Play Billing)
+- src/composables/useHaptics.js (vibration feedback, tuned for Samsung S24)
+- localStorage: `downpour_entries` (encrypted), `downpour_settings`, `downpour_usage_count`, `downpour_unlocked`
 - sessionStorage: `downpour_current_prompt`
+
+**Constants:**
+- src/constants/app.js (emotions, prompts, storage keys, free release limit)
 
 **Config:**
 - vite.config.js (PWA manifest, service worker)
+- twa-manifest.json (TWA config, v8)
+- app/build.gradle (Android build config)
 
 ---
 
