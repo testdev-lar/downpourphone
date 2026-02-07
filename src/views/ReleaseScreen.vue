@@ -108,7 +108,7 @@
             @click="exitApp"
             class="touch-target px-8 py-3 bg-amber-200/10 hover:bg-amber-200/20 text-amber-200/80 rounded-full transition-all duration-300 border border-amber-200/20 backdrop-blur-sm active:scale-95"
           >
-            Continue with your day
+            Move on
           </button>
         </div>
       </transition>

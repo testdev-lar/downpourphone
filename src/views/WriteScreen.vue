@@ -45,11 +45,11 @@
           >
             {{ text.length }} / {{ charLimit }}
           </span>
-          <span v-if="isAtLimit" class="text-sm text-red-400">Limit reached</span>
+          <span v-if="isAtLimit" class="text-sm text-red-400">You've reached your free releases</span>
         </div>
 
         <div class="mt-2">
-          <p class="text-text-muted text-sm mb-3 text-center">How does it feel? (optional)</p>
+          <p class="text-text-muted text-sm mb-3 text-center">How does this feel? (optional)</p>
           <div class="flex flex-wrap justify-center gap-2">
             <button
               v-for="emotion in emotions"

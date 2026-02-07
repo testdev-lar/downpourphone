@@ -17,14 +17,14 @@ export const EMOTIONS = [
 export const WRITING_PROMPTS = [
   "What's one thing you'd like to let go of today?",
   "What thought keeps circling back?",
-  "What are you holding onto that no longer serves you?",
+  "What are you holding onto that isn't helping?",
   "What feels too heavy to carry right now?",
   "What would you say if no one was listening?",
   "What needs to fall away?",
-  "What emotion is asking to be acknowledged?",
+  "What feeling have you been ignoring?",
   "What are you resisting feeling?",
   "What truth are you avoiding?",
-  "What do you need to release to move forward?"
+  "What do you need to let go of?"
 ]
 
 // Storage keys

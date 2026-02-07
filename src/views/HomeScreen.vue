@@ -62,27 +62,27 @@
       @click.self="showGuide = false"
     >
       <div class="bg-bg-secondary border border-border rounded-2xl p-6 max-w-sm w-full backdrop-blur-sm max-h-[80vh] overflow-y-auto">
-        <h3 class="text-xl font-light text-text-primary mb-4">How to use Downpour</h3>
+        <h3 class="text-xl font-light text-text-primary mb-4">How it works</h3>
 
         <div class="space-y-4 text-sm">
           <div>
             <p class="text-text-primary font-medium mb-1">When to use it</p>
-            <p class="text-text-muted">Those nights when your brain won't shut up. After a hard conversation when you're still carrying something you couldn't say. When you need to get something out but there's no one to say it to.</p>
+            <p class="text-text-muted">Those nights when your brain won't quiet down. When you're still carrying something you couldn't say. When you need to get something out but there's no one to say it to.</p>
           </div>
 
           <div>
             <p class="text-text-primary font-medium mb-1">What to do</p>
-            <p class="text-text-muted">Write whatever's stuck in your head. It doesn't need to make sense. Hit release, watch it dissolve into rain, then close the app and continue with your day.</p>
+            <p class="text-text-muted">Write whatever's stuck in your head. It doesn't need to make sense. Hit release, watch it dissolve, then close the app and move on.</p>
           </div>
 
           <div>
             <p class="text-text-primary font-medium mb-1">The idea</p>
-            <p class="text-text-muted">This isn't about tracking your feelings or going back to analyse what you wrote. It's just a place to put things down so you're not carrying them anymore.</p>
+            <p class="text-text-muted">This isn't about tracking feelings or analysing what you wrote. It's just a place to set things down.</p>
           </div>
 
           <div>
             <p class="text-text-primary font-medium mb-1">Your archive</p>
-            <p class="text-text-muted">Everything you write is saved quietly on your phone. You can look back if you want, or never open it at all.</p>
+            <p class="text-text-muted">Everything is saved privately on your device. Look back if you want, or never open it.</p>
           </div>
         </div>
 

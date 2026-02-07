@@ -57,8 +57,8 @@
             class="touch-target w-full flex items-center justify-between"
           >
             <div class="text-left">
-              <p class="text-text-primary font-medium">Replay Tutorial</p>
-              <p class="text-text-muted text-sm">See the onboarding again</p>
+              <p class="text-text-primary font-medium">Replay intro</p>
+              <p class="text-text-muted text-sm">See the introduction again</p>
             </div>
 
             <svg viewBox="0 0 24 24" class="w-6 h-6 text-text-muted" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -73,7 +73,7 @@
             <p class="text-text-muted text-sm">Downpour</p>
             <p class="text-text-muted/60 text-xs mt-1">Version 1.0.0</p>
             <p class="text-text-muted text-xs mt-2">
-              A minimalist emotional release journaling app. Write what's weighing on you, then let it rain away.
+              Write what's weighing on you. Then let it rain away.
             </p>
           </div>
         </div>

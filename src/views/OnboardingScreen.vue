@@ -70,7 +70,7 @@
           <div class="space-y-4">
             <!-- Emotion selector (smaller, not highlighted) -->
             <div>
-              <p class="text-text-muted text-sm mb-3 text-center">How does it feel? (optional)</p>
+              <p class="text-text-muted text-sm mb-3 text-center">How does this feel? (optional)</p>
               <div class="flex flex-wrap justify-center gap-2">
                 <button
                   v-for="emotion in emotions"
@@ -177,16 +177,16 @@ const screens = [
   },
   {
     lines: [
-      'Emotions are weather passing through you.',
+      'Emotions are weather \u2014 they pass through you.',
       'Here, you can let them fall like rain.',
       "There's nothing to solve here."
     ]
   },
   {
     lines: [
-      'Your thoughts dissolve from view.',
-      "They're kept quietly in your archive.",
-      'You can choose whether to revisit.'
+      'What you write dissolves from view.',
+      'Kept quietly in your archive.',
+      "Revisit them, or don't."
     ]
   },
   {

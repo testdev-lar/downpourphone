@@ -67,7 +67,7 @@
             <button
               @click="confirmDelete(entry.id)"
               class="p-2 text-text-muted hover:text-red-400 transition-colors flex-shrink-0"
-              aria-label="Delete thought"
+              aria-label="Delete release"
             >
               <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -108,7 +108,7 @@
           class="bg-bg-secondary border border-border rounded-2xl p-6 max-w-sm w-full"
           @click.stop
         >
-          <h2 class="text-lg font-light text-text-primary mb-4">Delete thought?</h2>
+          <h2 class="text-lg font-light text-text-primary mb-4">Delete this release?</h2>
           <div class="flex gap-3">
             <button
               @click="cancelDelete"
@@ -133,7 +133,7 @@
         v-if="showDeleteFeedback"
         class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-bg-secondary/95 border border-border rounded-full text-text-primary backdrop-blur-sm z-50"
       >
-        Thought deleted
+        Release deleted
       </div>
     </transition>
 
@@ -143,8 +143,8 @@
       class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center px-6 z-50"
     >
       <div class="bg-bg-secondary border border-border rounded-2xl p-6 max-w-sm w-full backdrop-blur-sm">
-        <h3 class="text-xl font-light text-text-primary mb-2">Clear All Data?</h3>
-        <p class="text-text-muted mb-6">This will delete all your entries. This cannot be undone.</p>
+        <h3 class="text-xl font-light text-text-primary mb-2">Clear everything?</h3>
+        <p class="text-text-muted mb-6">This will delete all your releases. This can't be undone.</p>
         <div class="flex gap-3">
           <button
             @click="showClearConfirm = false"
@@ -185,7 +185,7 @@ const showClearConfirm = ref(false)
 
 const entryCountText = computed(() => {
   const count = entries.value.length
-  return count === 1 ? '1 thought released' : `${count} thoughts released`
+  return count === 1 ? '1 release' : `${count} releases`
 })
 
 onMounted(async () => {

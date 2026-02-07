@@ -10,7 +10,7 @@
         </h1>
 
         <p class="text-text-muted mb-8 leading-relaxed">
-          You've released 7 storms. That means Downpour is working for you.
+          You've released 7 times. That means Downpour is working for you.
         </p>
 
         <p class="text-text-primary mb-8">
@@ -117,7 +117,7 @@ const handleUnlock = async () => {
     }
   } else {
     // Not in TWA - show message (dev mode)
-    errorMessage.value = 'Purchases only available in the app from Google Play'
+    errorMessage.value = 'Purchases are only available in the Google Play app'
   }
 }
 
