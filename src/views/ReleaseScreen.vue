@@ -310,10 +310,10 @@ const startClearingSequence = () => {
     showButton.value = true
   }), 8500)
 
-  // First bird (7 seconds after words fade in)
+  // First bird (5 seconds after words fade in)
   addTimeout(safeCallback(() => {
     triggerBird()
-  }), 14500) // 7500ms (second line) + 7000ms
+  }), 12500) // 7500ms (second line) + 5000ms
 
   // Occasional birds every 15 seconds
   birdInterval.value = setInterval(safeCallback(() => {

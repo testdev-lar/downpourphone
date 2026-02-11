@@ -21,9 +21,9 @@ export function useHaptics() {
     // Define vibration patterns for different intensities
     // Values are in milliseconds
     const patterns = {
-      light: 50,           // Subtle tap
-      medium: 100,         // Standard feedback
-      heavy: [50, 30, 80]  // Strong double-tap confirmation
+      light: 15,           // Subtle tap
+      medium: 35,          // Standard feedback
+      heavy: [15, 15, 30]  // Double-tap confirmation
     }
 
     const pattern = patterns[intensity] || patterns.medium
